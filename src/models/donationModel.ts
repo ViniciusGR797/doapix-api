@@ -1,0 +1,5 @@
+class Donation {
+  
+}
+
+export { Donation };
