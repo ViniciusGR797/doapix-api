@@ -17,7 +17,7 @@
 </div>
 
 <div align="center">
-  <img src="https://cdn.discordapp.com/attachments/1089358473483006105/1221203635921354863/logo_DoaPix.png?ex=6611b983&is=65ff4483&hm=106e8b037e86267ad73230d8e88b62f6ff32b61c49fc0349bb3237d85f6317dd&" alt="logo DoaPix">
+  <img src="https://cdn.discordapp.com/attachments/1089358473483006105/1221211189598490745/logo_DoaPix.png?ex=6611c08c&is=65ff4b8c&hm=bfa3604406bb3863cbed3e2a3a792570a719106e840dbdd6a057068a11375ab3&" alt="logo DoaPix">
 </div>
 
 > O software proposto tem como objetivo facilitar o processo de doações solidárias, integrando o PIX como método de pagamento. Simplifique sua experiência de doação com eficiência.
