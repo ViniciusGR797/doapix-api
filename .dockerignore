@@ -1,0 +1,7 @@
+# Arquivos e diretórios a serem ignorados
+.swagger/swagger.yaml
+.swagger/generateSwaggerJson.ts
+.vscode
+.gitignore
+LICENSE
+README.md
