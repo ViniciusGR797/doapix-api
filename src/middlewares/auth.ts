@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { ObjectId } from 'mongodb';
 import { Token } from '../securities/token';
 
 // Estendendo a interface Request para incluir a propriedade userId
@@ -22,7 +21,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     // Verifica o token e obtém o ID do usuário, se o token for válido
     const user_id = await Token.verifyToken(token);
 
-    if (typeof user_id !== 'string' || !ObjectId.isValid(user_id) || !user_id) {
+    if (typeof user_id !== 'string' || !user_id) {
       return res.status(403).json({ msg: 'Não tem permissão para acessar o recurso solicitado' });
     }
 

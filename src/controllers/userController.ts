@@ -3,6 +3,7 @@ import { UserService } from '../services/userService';
 import { Password } from '../securities/password';
 import { Token } from '../securities/token';
 import { UserUpsert, User, UserLogin } from '../models/userModel';
+import { validate } from 'class-validator';
 
 export class UserController {
   static async getUserMe(req: Request, res: Response): Promise<Response> {
@@ -10,7 +11,56 @@ export class UserController {
   }
 
   static async createUser(req: Request, res: Response): Promise<Response> {
-    return res.status(200).json("user");
+    try{
+      let payload = new UserUpsert(req.body);
+      const errors = await validate(payload);
+
+      if(errors.length > 0){
+        const firstError = errors[0];
+        const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : "Parâmetros inválidos e/ou incompletos";
+        return res.status(400).json({ msg: errorMessage });
+      }
+
+      const {user: existingUser, error: getUserEmailError } = await UserService.getUserByEmail(payload.email);
+
+      if (existingUser) {
+        return res.status(400).json({ msg: "Este e-mail já está cadastrado" });
+      }
+
+      if(getUserEmailError){
+        return res.status(500).json({ msg: getUserEmailError });
+      }
+
+      const data = new User({
+        "name" : payload.name,
+        "email" : payload.email,
+        "pwd" : await Password.hashPassword(payload.pwd)
+      })
+
+      // Criar user
+      const { createdUserID, error: createUserError } = await UserService.createUser(data);
+      if (createUserError) {
+        return res.status(500).json({ msg: createUserError });
+      }
+      if (!createdUserID || createdUserID === "") {
+          return res.status(404).json({ msg: 'Nenhum dado encontrado' });
+      }
+
+      //Buscar usuario recem criado e validar
+      const {user, error: getUserError} = await UserService.getUserById(createdUserID);
+      console.log(createdUserID)
+
+      if (getUserError) {
+        return res.status(500).json({ msg: getUserError });
+      }
+      if (!user) {
+        return res.status(404).json({ msg: 'Nenhum dado encontrado' });
+      }
+      return res.status(201).json(user);
+    }catch(error){
+      console.error('Erro ao criar usuário:', error);
+      return res.status(500).json({ msg: 'Erro interno do servidor' });
+    }
   }
 
   static async loginUser(req: Request, res: Response): Promise<Response> {
