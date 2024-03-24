@@ -1,6 +1,46 @@
 import { IsString, IsEmail, Matches, ValidateNested, IsNotEmpty, ArrayNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - id
+ *         - name
+ *         - email
+ *         - pwd
+ *         - pix_key
+ *         - created_at
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Identificador único do usuário
+ *           example: "f1cd0ab3-4f34-4a53-8b2c-594dd917d6ca"
+ *         name:
+ *           type: string
+ *           description: Nome do usuário
+ *           example: "Nome do usuário"
+ *         email:
+ *           type: string
+ *           description: Email do usuário
+ *           example: "email@example.com"
+ *         pwd:
+ *           type: string
+ *           description: Senha do usuário
+ *           example: "senha"
+ *         pix_key:
+ *           type: string
+ *           description: Chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória
+ *           example: "1234abcd-5678-efgh-ijkl-9876mnopqrst"
+ *         created_at:
+ *           type: string
+ *           description: Data de criação do usuário
+ *           example: "2024-03-24T19:34:02.090Z"
+ */
+
 class User {
   @IsString({ message: 'O campo id deve ser uma string' })
   @IsNotEmpty({ message: 'O campo id é obrigatório' })
@@ -44,6 +84,36 @@ class User {
   }
 }
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserUpdate:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - pwd
+ *         - pix_key
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Nome do usuário
+ *           example: "Nome do usuário"
+ *         email:
+ *           type: string
+ *           description: Email do usuário
+ *           example: "email@example.com"
+ *         pwd:
+ *           type: string
+ *           description: Senha do usuário
+ *           example: "senha"
+ *         pix_key:
+ *           type: string
+ *           description: Chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória
+ *           example: "1234abcd-5678-efgh-ijkl-9876mnopqrst"
+ */
+
 class UserUpdate {
   @IsString({ message: 'O campo name deve ser uma string' })
   @IsNotEmpty({ message: 'O campo name é obrigatório' })
@@ -75,6 +145,31 @@ class UserUpdate {
   }
 }
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserInsert:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - pwd
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Nome do usuário
+ *           example: "Nome do usuário"
+ *         email:
+ *           type: string
+ *           description: Email do usuário
+ *           example: "email@example.com"
+ *         pwd:
+ *           type: string
+ *           description: Senha do usuário
+ *           example: "senha"
+ */
+
 class UserInsert {
   @IsString({ message: 'O campo name deve ser uma string' })
   @IsNotEmpty({ message: 'O campo name é obrigatório' })
@@ -97,6 +192,26 @@ class UserInsert {
     this.pwd = typeof payload.pwd === 'string' ? payload.pwd.trim() : payload.pwd;
   }
 }
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserLogin:
+ *       type: object
+ *       required:
+ *         - email
+ *         - pwd
+ *       properties:
+ *         email:
+ *           type: string
+ *           description: Email do usuário
+ *           example: "email@example.com"
+ *         pwd:
+ *           type: string
+ *           description: Senha do usuário
+ *           example: "senha"
+ */
 
 class UserLogin {
   @IsEmail({}, { message: 'Email inválido' })

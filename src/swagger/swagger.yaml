@@ -3,7 +3,429 @@ info:
   title: API RESTful - DoaPix
   version: 1.0.0
   description: >-
-    
+    Este projeto consiste na construção de uma **API RESTful usando Node.js e
+    TypeScript**, com integração ao banco de dados **PostgreSQL**, para criar um
+    sistema que permita aos usuários gerenciar **doações solidárias online**. As
+    doações serão organizadas em categorias e também terão um histórico para
+    acompanhamento de doações realizadas. Através de uma interface amigável, os
+    usuários poderão **criar, visualizar, editar e excluir doações**, além de
+    acompanhar **doações previamente realizadas**.
+
+
+    A API fornecerá aos usuários todas as funcionalidades necessárias para
+    realizar operações básicas em suas doações, como criar, visualizar, editar e
+    excluir. Além disso, ela será projetada para garantir a segurança e a
+    privacidade dos dados do usuário, implementando práticas adequadas de
+    autenticação e autorização.
+
+
+    O uso do **Node.js e TypeScript** permitirá uma **fácil implementação dos
+    endpoints da API**, bem como a manutenção do código com tipagem estática,
+    tornando o processo de desenvolvimento mais seguro e organizado.
+    Utilizaremos o **PostgreSQL** como nosso banco de dados para **armazenar as
+    doações e as informações relacionadas a categorias e histórico de
+    transações**.
+
+
+    Para a **documentação da API**, faremos uso do **Swagger UI** através do
+    pacote **'swagger-ui-express'** em conjunto com o **'swagger-jsdoc'**, o que
+    permitirá gerar automaticamente a documentação da API a partir das anotações
+    do código-fonte. Isso tornará mais fácil para os desenvolvedores e usuários
+    entenderem e interagirem com os endpoints da API.
+
+
+    Para gerenciar as dependências do projeto, utilizaremos o **Yarn** como
+    gerenciador de pacotes, garantindo uma instalação mais rápida e confiável
+    das bibliotecas necessárias para o desenvolvimento.
+
+
+    Em suma, o objetivo deste software é oferecer aos usuários uma **maneira
+    prática e segura de gerenciar suas doações online**, proporcionando
+    organização através de categorias e a capacidade de acompanhar doações
+    realizadas. Com uma API RESTful completa e bem documentada, esperamos
+    fornecer uma solução confiável e eficiente para atender às necessidades de
+    gerenciamento de doações de nossos usuários. As doações são anônimas e o
+    principal meio de pagamento é o Pix.
   license:
     name: MIT License
     url: https://github.com/ViniciusGR797/doapix-api/blob/master/LICENSE
+components:
+  securitySchemes:
+    jwt:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Para autenticar, coloque o token JWT no formato **Bearer _token_**.
+  schemas:
+    DeleteSuccess:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Mensagem de sucesso ao excluir
+          example: Excluído com sucesso
+    LoginSuccess:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Mensagem de sucesso ao fazer login
+          example: <token>
+    LoginFail:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Mensagem de falha ao fazer login
+          example: Credenciais de usuário inválidas
+    BadRequest:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: >-
+            Requisição inválida. Alguns parâmetros podem estar faltando ou serem
+            inválidos
+          example: Alguns parâmetros podem estar faltando ou serem inválidos
+    Unauthorized:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Não autorizado. O token JWT não foi fornecido ou é inválido
+          example: O token JWT não foi fornecido ou é inválido
+    Forbidden:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: >-
+            Proibido. O usuário não tem permissão para acessar o recurso
+            solicitado
+          example: Não tem permissão para acessar o recurso solicitado
+    NotFound:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Nenhum dado encontrado. O recurso solicitado não existe
+          example: Nenhum dado encontrado
+    InternalServerError:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Erro interno ao manipular dados no serviço
+          example: Erro interno do servidor
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - pwd
+        - pix_key
+        - created_at
+      properties:
+        id:
+          type: string
+          description: Identificador único do usuário
+          example: f1cd0ab3-4f34-4a53-8b2c-594dd917d6ca
+        name:
+          type: string
+          description: Nome do usuário
+          example: Nome do usuário
+        email:
+          type: string
+          description: Email do usuário
+          example: email@example.com
+        pwd:
+          type: string
+          description: Senha do usuário
+          example: senha
+        pix_key:
+          type: string
+          description: >-
+            Chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave
+            aleatória
+          example: 1234abcd-5678-efgh-ijkl-9876mnopqrst
+        created_at:
+          type: string
+          description: Data de criação do usuário
+          example: '2024-03-24T19:34:02.090Z'
+    UserUpdate:
+      type: object
+      required:
+        - name
+        - email
+        - pwd
+        - pix_key
+      properties:
+        name:
+          type: string
+          description: Nome do usuário
+          example: Nome do usuário
+        email:
+          type: string
+          description: Email do usuário
+          example: email@example.com
+        pwd:
+          type: string
+          description: Senha do usuário
+          example: senha
+        pix_key:
+          type: string
+          description: >-
+            Chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave
+            aleatória
+          example: 1234abcd-5678-efgh-ijkl-9876mnopqrst
+    UserInsert:
+      type: object
+      required:
+        - name
+        - email
+        - pwd
+      properties:
+        name:
+          type: string
+          description: Nome do usuário
+          example: Nome do usuário
+        email:
+          type: string
+          description: Email do usuário
+          example: email@example.com
+        pwd:
+          type: string
+          description: Senha do usuário
+          example: senha
+    UserLogin:
+      type: object
+      required:
+        - email
+        - pwd
+      properties:
+        email:
+          type: string
+          description: Email do usuário
+          example: email@example.com
+        pwd:
+          type: string
+          description: Senha do usuário
+          example: senha
+security:
+  - jwt: []
+paths:
+  /users:
+    get:
+      summary: Vizualiza o usuário logado
+      description: Retorna as informações do usuário logado
+      tags:
+        - User
+      operationId: get_user_me
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      summary: Cria um novo usuário
+      description: >-
+        Cria um novo usuário com base nos dados fornecidos no corpo da
+        requisição.
+      tags:
+        - User
+      operationId: create_user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInsert'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      summary: Atualiza o usuário logado
+      description: >-
+        Atualiza as informações do usuário logado com base nos dados fornecidos
+        no corpo da requisição
+      tags:
+        - User
+      operationId: update_user_me
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Remove o usuário logado
+      description: Apaga da base de dados seu usuário
+      tags:
+        - User
+      operationId: delete_user_me
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSuccess'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: NotFound
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /users/login:
+    post:
+      summary: Faz login do usuário
+      description: >-
+        Autentica o usuário com base no email e senha fornecidos no corpo da
+        requisição.
+      tags:
+        - User
+      operationId: login_user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginSuccess'
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginFail'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+tags:
+  - name: User
+    description: Rotas para manipulação de usuários
