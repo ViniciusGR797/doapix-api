@@ -22,7 +22,19 @@ export class UserService {
 
   // Função para buscar o usuário por email
   static async getUserByEmail(email: string): Promise<{ user: any | null, error: string | null }> {
-    return { user: null, error: null };
+    try{
+      const result = await query('SELECT * FROM users WHERE email = $1', [email]);
+
+      if (result && result.rows && result.rows.length > 0) {
+        const user = result.rows[0];
+        return { user, error: null };
+      } else {
+        return { user: null, error: 'Usuário não encontrado' };
+      }
+    }catch(error){
+      console.error('Erro ao buscar usuário por ID:', error);
+      return { user: null, error: 'Erro interno do servidor' };
+    }
   }
 
   // Função para criar usuário

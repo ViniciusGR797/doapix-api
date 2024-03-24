@@ -64,7 +64,45 @@ export class UserController {
   }
 
   static async loginUser(req: Request, res: Response): Promise<Response> {
-    return res.status(200).json({ access_token: "token" });
+    try{
+      const payload = new UserLogin(req.body);
+
+      const errors = await validate(payload);
+
+      if (errors.length > 0) {
+        const firstError = errors[0];
+        const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros invalidos e/ou vazios';
+        return res.status(400).json({ msg: errorMessage });
+      }
+
+      const { user, error: getUserError } = await UserService.getUserByEmail(payload.email);
+
+      if (getUserError) {
+        return res.status(500).json({ msg: getUserError });
+      }
+      if (!user) {
+        return res.status(401).json({ msg: 'Credenciais de usuário inválidas' });
+      }
+
+      const isPasswordValid = await Password.comparePassword(payload.pwd, user.pwd);
+
+      if (!isPasswordValid) {
+        return res.status(401).json({ msg: 'Credenciais de usuário inválidas' });
+      }
+
+      const token = Token.generateToken(user._id);
+      console.log("TOKEN: " + token);
+
+      return res.status(200).json({ 
+        access_token: token,
+        id: user._id,
+        name: user.name,
+        email: user.email,
+       });
+    }catch(err){
+      console.error('Erro ao criar usuário:', err);
+      return res.status(500).json({ msg: 'Erro interno do servidor' });
+    }
   }
 
   static async updateUserMe(req: Request, res: Response): Promise<Response> {
