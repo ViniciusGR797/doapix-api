@@ -1,5 +1,4 @@
-import { IsString, IsEmail, Matches, ValidateNested, IsNotEmpty, ArrayNotEmpty } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
 
 /**
  * @swagger

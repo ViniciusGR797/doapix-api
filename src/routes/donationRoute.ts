@@ -4,11 +4,11 @@ import { authMiddleware } from '../middlewares/auth';
 
 const router = Router();
 
-router.get('/', authMiddleware, DonationController.getDonation);
+router.get('/', DonationController.getDonation);
 
-router.get('/:donation_id', authMiddleware, DonationController.getDonationById);
+router.get('/:donation_id', DonationController.getDonationById);
 
-router.post('/', DonationController.createDonation);
+router.post('/', authMiddleware, DonationController.createDonation);
 
 router.put('/:donation_id', authMiddleware, DonationController.updateDonation);
 
