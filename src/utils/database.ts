@@ -1,18 +1,14 @@
-import { Pool, Client } from 'pg';
+import { Pool } from 'pg';
 import config from '../config';
 
 let pool: Pool;
 
 export async function connectDB() {
   try {
-    const { host, user, password, database, port } = config.bd;
+    const uri = config.bdUri;
 
     pool = new Pool({
-      user,
-      host,
-      database,
-      password,
-      port,
+      connectionString: uri,
     });
 
     console.log("Connected to PostgreSQL!");
