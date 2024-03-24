@@ -1,3 +1,5 @@
+import { query } from "../utils/database"
+ 
 export class UserService {
   // Função para buscar o usuário por ID 
   static async getUserById(user_id: string): Promise<{ user: any | null, error: string | null }> {
@@ -11,7 +13,21 @@ export class UserService {
 
   // Função para criar usuário
   static async createUser(data: any): Promise<{ createdUserID: string; error: string | null }> {
-    return { createdUserID: "", error: null };
+    try{
+      
+      const { name, email, pwd } = data;
+
+      const result = await query('INSERT INTO users (name, email, pwd) VALUES ($1, $2, $3) RETURNING id', [name, email, pwd]);
+
+      if (result && result.rows && result.rows.length > 0 && result.rows[0].id) {
+        return { createdUserID: result.rows[0].id, error: null };
+      } else {
+        return { createdUserID: '', error: 'Erro ao criar usuário' };
+      }
+    }catch (error) {
+      console.error('Erro ao criar usuário:', error);
+      return { createdUserID: '', error: 'Erro interno do servidor' };
+    }
   }
 
   // Função para atualizar um usuário
