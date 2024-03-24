@@ -7,7 +7,18 @@ import { validate } from 'class-validator';
 
 export class UserController {
   static async getUserMe(req: Request, res: Response): Promise<Response> {
-    return res.status(200).json("user");
+    const user_id = req.user_id;
+
+    const { user, error } = await UserService.getUserById(user_id);
+
+    if (error) {
+      return res.status(500).json({ msg: error });
+    }
+    if (!user) {
+      return res.status(404).json({ msg: 'Nenhum usuário encontrado' });
+    }
+
+    return res.status(200).json(user);
   }
 
   static async createUser(req: Request, res: Response): Promise<Response> {
