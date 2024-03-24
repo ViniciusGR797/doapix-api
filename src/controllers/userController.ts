@@ -76,12 +76,12 @@ export class UserController {
         return res.status(401).json({ msg: 'Credenciais de usuário inválidas' });
       }
 
-      const token = Token.generateToken(user._id);
+      const token = Token.generateToken(user.id);
       console.log("TOKEN: " + token);
 
       return res.status(200).json({ 
         access_token: token,
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
        });
