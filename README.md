@@ -8,11 +8,11 @@
   <img src="https://img.shields.io/static/v1?label=postgresql&message=database&color=blue&style=for-the-badge&logo=postgresql"/>
   <img src="https://img.shields.io/static/v1?label=docker&message=container&color=blue&style=for-the-badge&logo=docker"/>
   <img src="http://img.shields.io/static/v1?label=License&message=MIT&color=green&style=for-the-badge"/>
-  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/ViniciusGR797/noteswift-api?style=for-the-badge">
-  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/ViniciusGR797/noteswift-api?style=for-the-badge">
-  <img alt="GitHub forks" src="https://img.shields.io/github/forks/ViniciusGR797/noteswift-api?style=for-the-badge">
-  <img alt="Bitbucket open issues" src="https://img.shields.io/bitbucket/issues/ViniciusGR797/noteswift-api?style=for-the-badge">
-  <img alt="Bitbucket open pull request" src="https://img.shields.io/bitbucket/pr-raw/ViniciusGR797/noteswift-api?style=for-the-badge">
+  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/ViniciusGR797/doapix-api?style=for-the-badge">
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/ViniciusGR797/doapix-api?style=for-the-badge">
+  <img alt="GitHub forks" src="https://img.shields.io/github/forks/ViniciusGR797/doapix-api?style=for-the-badge">
+  <img alt="Bitbucket open issues" src="https://img.shields.io/bitbucket/issues/ViniciusGR797/doapix-api?style=for-the-badge">
+  <img alt="Bitbucket open pull request" src="https://img.shields.io/bitbucket/pr-raw/ViniciusGR797/doapix-api?style=for-the-badge">
   <img src="http://img.shields.io/static/v1?label=STATUS&message=Development&color=GREEN&style=for-the-badge"/>
 </div>
 
@@ -119,12 +119,12 @@ Essas são as principais tecnologias utilizadas para construir esta API RESTful.
 
 A documentação do projeto e da API está disponível nos seguintes links:
 
-- [Documentação do Projeto](): Este documento fornece uma visão geral do projeto NoteSwift, incluindo sua finalidade, escopo e funcionalidades.
+- [Documentação do Projeto](): Este documento fornece uma visão geral do projeto DoaPix, incluindo sua finalidade, escopo e funcionalidades.
 - [Documentação do Swagger Json](https://github.com/ViniciusGR797/doapix-api/blob/master/src/swagger/swagger.json) e [Yaml](https://github.com/ViniciusGR797/doapix-api/blob/master/src/swagger/swagger.yaml): A documentação do Swagger descreve os endpoints e os modelos da API de forma detalhada.
 
 Após executar a aplicação, você pode acessar o Swagger UI pela rota `/api-docs` e `/docs`, onde encontrará uma interface interativa para explorar e testar a API.
 
-Certifique-se de revisar esses documentos para obter mais informações sobre o projeto NoteSwift e para entender como interagir com a API usando o Swagger UI. Eles fornecerão detalhes importantes sobre o escopo, os recursos e os endpoints disponíveis na aplicação.
+Certifique-se de revisar esses documentos para obter mais informações sobre o projeto DoaPix e para entender como interagir com a API usando o Swagger UI. Eles fornecerão detalhes importantes sobre o escopo, os recursos e os endpoints disponíveis na aplicação.
 
 ## 🙌 Reconhecimento
 
@@ -171,4 +171,4 @@ A licença escolhida para o projeto é um elemento importante para estabelecer o
 
 Recomenda-se que você leia atentamente o arquivo LICENSE para garantir o cumprimento das regras estabelecidas e o uso adequado do código fornecido neste repositório.
 
-[⬆ Voltar ao topo](#noteswift-restful-api)
+[⬆ Voltar ao topo](#doapix-restful-api)
