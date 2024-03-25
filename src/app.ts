@@ -8,12 +8,15 @@ import transactionRoutes from './routes/transactionRoute';
 
 import { connectDB } from './utils/database'; 
 
+import cors from 'cors';
+
 const app = express();
 
 // Conecte ao DB uma vez, ao iniciar o aplicativo
 connectDB();
 
 app.use(express.json());
+app.use(cors());
 
 // Rotas da API
 app.use('/users', userRoutes);
