@@ -11,9 +11,18 @@ export class DonationController {
   }
 
   static async getDonationById(req: Request, res: Response): Promise<Response> {
-    const donationId = req.params.id;
+    const donationId = req.params.donation_id;
 
-    return res.status(200).json("donation");
+    const { donation, error: getDonationError } = await DonationService.getDonationById(donationId);
+
+    if (getDonationError) {
+      return res.status(500).json({ msg: getDonationError });
+    }
+    if (!donation) {
+      return res.status(404).json({ msg: 'Nenhum dado encontrado' });
+    }
+
+    return res.status(201).json(donation);
   }
 
   static async createDonation(req: Request, res: Response): Promise<Response> {
