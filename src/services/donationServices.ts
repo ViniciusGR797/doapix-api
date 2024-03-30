@@ -37,10 +37,35 @@ export class DonationService {
     }
 
     static async updateDonation(donation_id: string, updatedDonationData: any): Promise<{ updatedDonation: any | null; error: string | null }> {
-        return { updatedDonation: null, error: 'Erro interno do servidor'};
+      try {
+        const { newName, newGoal, newUrlImage, newDeadline, newState, newCategory, newDescription } = updatedDonationData;
+    
+        const result = await query('UPDATE donations SET name = $1, goal = $2, url_image = $3, deadline = $4, state = $5, category = $6, description = $7 WHERE id = $8 RETURNING *', [newName, newGoal, newUrlImage,newDeadline, newState, newCategory, newDescription, donation_id]);
+    
+        if (result && result.rows && result.rows.length > 0) {
+          const updatedDonation = result.rows[0];
+          return { updatedDonation, error: null };
+        }
+    
+        return { updatedDonation: null, error: null };
+      } catch (error) {
+        console.error('Erro ao atualizar doação:', error);
+        return { updatedDonation: null, error: 'Erro interno do servidor' };
+      }
     }
 
     static async deleteDonation(donation_id: string): Promise<{ deletedDonation: any | null; error: string | null }> {
+      try {
+        const result = await query('DELETE FROM donations WHERE id = $1', [donation_id]);
+  
+        if (result && result.rows && result.rows.length > 0) {
+          const deletedDonation = result.rows[0];
+          return { deletedDonation, error: null };
+        }
+        return { deletedDonation: null, error: null }; 
+      }catch (error) {
+        console.error('Erro ao deletar doação:', error);
         return { deletedDonation: null, error: 'Erro interno do servidor'};
+      }
     }
 }
