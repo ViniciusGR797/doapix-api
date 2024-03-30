@@ -150,6 +150,23 @@ export class UserController {
   
 
   static async deleteUserMe(req: Request, res: Response): Promise<Response> {
+
+    const user_id = req.user_id;
+  
+    const { user, error: getUserError } = await UserService.getUserById(user_id);
+
+    if (getUserError) {
+      return res.status(500).json({ msg: getUserError });
+    }
+    if (!user) {
+      return res.status(404).json({ msg: 'Nenhum dado encontrado' });
+    }
+  
+    const { deletedUser, error: deletedUserError } = await UserService.deleteUser(user_id);
+    if (deletedUser) {
+      return res.status(500).json({ msg: deletedUserError });
+    }
     return res.status(200).json({ msg: 'Excluído com sucesso' });
   }
+    
 }
