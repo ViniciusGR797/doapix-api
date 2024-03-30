@@ -103,8 +103,51 @@ export class UserController {
   }
 
   static async updateUserMe(req: Request, res: Response): Promise<Response> {
-    return res.status(200).json("updatedUser");
+    const user_id = req.user_id;
+  
+    const { user, error: getUserError } = await UserService.getUserById(user_id);
+
+    if (getUserError) {
+      return res.status(500).json({ msg: getUserError });
+    }
+    if (!user) {
+      return res.status(404).json({ msg: 'Nenhum dado encontrado' });
+    }
+  
+    const payload = new UserUpdate(req.body);
+  
+    const errors = await validate(payload);
+    
+    if (errors.length > 0) {
+      const firstError = errors[0];
+      const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros inválidos e/ou vazios';
+      return res.status(400).json({ msg: errorMessage });
+    }
+  
+    if (payload.email !== user.email) {
+      const { user: existingUser, error: getUserEmailError } = await UserService.getUserByEmail(payload.email);
+      if (getUserEmailError) {
+        return res.status(500).json({ msg: getUserEmailError });
+      }
+      if (existingUser) {
+        return res.status(400).json({ msg: 'Email já cadastrado no sistema' });
+      }
+    }
+  
+    const updatedUserData = {
+      novoNome: payload.name || user.name,
+      novoEmail: payload.email || user.email,
+      novaSenha: await Password.hashPassword(payload.pwd || user.pwd),
+      novaPixKey: payload.pix_key || user.pix_key
+    };
+  
+    const { updatedUser, error: updateUserError } = await UserService.updateUser(user_id, updatedUserData);
+    if (updateUserError) {
+      return res.status(500).json({ msg: updateUserError });
+    }
+    return res.status(200).json(updatedUser);
   }
+  
 
   static async deleteUserMe(req: Request, res: Response): Promise<Response> {
     return res.status(200).json({ msg: 'Excluído com sucesso' });

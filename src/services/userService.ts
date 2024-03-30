@@ -48,9 +48,22 @@ export class UserService {
     }
   }
 
-  // Função para atualizar um usuário
-  static async updateUser(user_id: string, updatedUser: any): Promise<{ updatedUser: any | null; error: string | null }> {
-    return { updatedUser: null, error: null };
+  static async updateUser(user_id: string, updatedUserData: any): Promise<{ updatedUser: any | null; error: string | null }> {
+    try {
+      const { novoNome, novoEmail, novaSenha, novaPixKey } = updatedUserData;
+  
+      const result = await query('UPDATE users SET name = $1, email = $2, pwd = $3, pix_key = $4 WHERE id = $5 RETURNING *', [novoNome, novoEmail, novaSenha, novaPixKey, user_id]);
+  
+      if (result && result.rows && result.rows.length > 0) {
+        const updatedUser = result.rows[0];
+        return { updatedUser, error: null };
+      }
+  
+      return { updatedUser: null, error: null };
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+      return { updatedUser: null, error: 'Erro interno do servidor' };
+    }
   }
 
   // Função para remover um usuário
