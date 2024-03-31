@@ -3,7 +3,16 @@ import { query } from "../utils/database";
 
 export class DonationService {
     static async getDonations(): Promise<{ donations: Donation[] | null, error: string | null }>{
-        return { donations: null, error: 'Erro interno do servidor' };
+      try{
+        const result = await query('SELECT * FROM donations');
+
+        const donations = result.rows;
+        return {donations, error: null}
+      }catch(error){
+        console.error('Erro ao resgatar doações: ', error);
+        return {donations: null, error: 'Erro interno do servidor'};
+      }
+      return { donations: null, error: 'Erro interno do servidor' };
     }
 
     static async getDonationById(donation_id: string): Promise<{ donation: Donation | null, error: string | null }>{

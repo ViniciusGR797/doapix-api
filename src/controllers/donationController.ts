@@ -7,7 +7,13 @@ import { validate } from 'class-validator';
 
 export class DonationController {
   static async getDonation(req: Request, res: Response): Promise<Response> {
-    return res.status(200).json("donation");
+    const { donations, error: getDonationsError } = await DonationService.getDonations();
+
+    if (getDonationsError) {
+      return res.status(500).json({ msg: getDonationsError });
+    }
+
+    return res.status(200).json(donations);
   }
 
   static async getDonationById(req: Request, res: Response): Promise<Response> {
