@@ -33,7 +33,7 @@ export class DonationService {
         try {
             const { name, description, goal, url_image, deadline, state, category } = data;
       
-            const result = await query('INSERT INTO donations (name, description, goal, url_image, deadline, state, category, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', [name, description, goal, url_image, deadline, state, category, user_id]);
+            const result = await query('INSERT INTO donations (name, description, goal, url_image, deadline, state, category, user_id, amount_raised) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', [name, description, goal, url_image, deadline, state, category, user_id, "0"]);
             if (result && result.rows && result.rows.length > 0 && result.rows[0].id) {
               return { createdDonationID: result.rows[0].id, error: null };
             }

@@ -88,12 +88,10 @@ export class UserController {
       }
 
       const token = Token.generateToken(user.id);
-      console.log("TOKEN: " + token);
 
       return res.status(200).json({ 
         access_token: token,
         id: user.id,
-        name: user.name,
         email: user.email,
        });
     }catch(err){
