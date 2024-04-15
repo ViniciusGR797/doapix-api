@@ -17,6 +17,10 @@ class Donation {
     @IsNotEmpty({ message: 'O campo goal é obrigatório' })
     goal: string;
 
+    @IsString({ message: 'O campo amount_raised deve ser uma string' })
+    @IsNotEmpty({ message: 'O campo amount_raised é obrigatório' })
+    amount_raised: string;
+
     @IsNotEmpty({ message: 'O campo imagem é obrigatório' })
     url_image: string;
 
@@ -48,6 +52,7 @@ class Donation {
         this.name = typeof payload.name === 'string' ? payload.name.trim() : payload.name;
         this.description = typeof payload.description === 'string' ? payload.description.trim().toLowerCase() : payload.description;
         this.goal = typeof payload.goal === 'string' ? payload.goal.trim() : payload.goal;
+        this.amount_raised = typeof payload.amount_raised === 'string' ? payload.amount_raised.trim() : payload.amount_raised;
         this.url_image = typeof payload.url_image === 'string' ? payload.url_image.trim() : payload.url_image;
         this.deadline = typeof payload.deadline === 'string' ? payload.deadline.trim() : payload.deadline;
         this.created_at = typeof payload.created_at === 'string' ? payload.created_at.trim() : payload.created_at;

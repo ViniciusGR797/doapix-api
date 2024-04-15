@@ -24,7 +24,21 @@ CREATE TABLE donations (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-
+CREATE TABLE transactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    txid VARCHAR(255),
+    location TEXT,
+    qr_code TEXT,
+    pix_copy_paste TEXT,
+    amount MONEY NOT NULL,
+    alias VARCHAR(255),
+    email VARCHAR(255) NOT NULL,
+    message VARCHAR(255),
+    status VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    donation_id UUID,
+    FOREIGN KEY (donation_id) REFERENCES donations(id)
+);
 
 
 

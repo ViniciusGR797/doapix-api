@@ -24,7 +24,7 @@ export class DonationService {
             }
             return { donation: null, error: null };
           } catch (error) {
-            console.error('Erro ao buscar usuário por ID:', error);
+            console.error('Erro ao buscar donation por ID:', error);
             return { donation: null, error: 'Erro interno do servidor' };
           }
     }
