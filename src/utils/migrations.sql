@@ -6,6 +6,7 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE, 
     pwd VARCHAR(255),
     pix_key VARCHAR(255),
+    pix_key_type VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

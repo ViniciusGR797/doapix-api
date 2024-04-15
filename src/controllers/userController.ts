@@ -136,7 +136,8 @@ export class UserController {
       novoNome: payload.name || user.name,
       novoEmail: payload.email || user.email,
       novaSenha: await Password.hashPassword(payload.pwd || user.pwd),
-      novaPixKey: payload.pix_key || user.pix_key
+      novaPixKey: payload.pix_key || user.pix_key,
+      novaPixKeyType: payload.pix_key_type || user.pix_key_type
     };
   
     const { updatedUser, error: updateUserError } = await UserService.updateUser(user_id, updatedUserData);

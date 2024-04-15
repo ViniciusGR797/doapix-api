@@ -1,4 +1,4 @@
-import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
+import { IsString, IsEmail, Matches, IsNotEmpty, IsIn } from 'class-validator';
 
 /**
  * @swagger
@@ -12,6 +12,7 @@ import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
  *         - email
  *         - pwd
  *         - pix_key
+ *         - pix_key_type
  *         - created_at
  *       properties:
  *         id:
@@ -32,8 +33,12 @@ import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
  *           example: "senha"
  *         pix_key:
  *           type: string
- *           description: Chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória
+ *           description: Chave pix
  *           example: "1234abcd-5678-efgh-ijkl-9876mnopqrst"
+ *         pix_key_type:
+ *           type: string
+ *           description: Tipo de chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória
+ *           example: "CPF"
  *         created_at:
  *           type: string
  *           description: Data de criação do usuário
@@ -66,6 +71,12 @@ class User {
   })
   pix_key: string;
 
+  @IsString({ message: 'O campo pix_key_type deve ser uma string' })
+  @IsIn(['CPF', 'CNPJ', 'Email', 'Telefone', 'Aleatória'], {
+    message: 'Tipo de Chave Pix inválido. O pix_key_type deve ser um CPF, CNPJ, Email, Telefone ou Aleatória',
+  })
+  pix_key_type: string;
+
   @IsString({ message: 'O campo created_at deve ser uma string' })
   @IsNotEmpty({ message: 'O campo created_at é obrigatório' })
   @Matches(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/, {
@@ -79,6 +90,7 @@ class User {
     this.email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : payload.email;
     this.pwd = typeof payload.pwd === 'string' ? payload.pwd.trim() : payload.pwd;
     this.pix_key = typeof payload.pix_key === 'string' ? payload.pix_key.trim() : payload.pix_key;
+    this.pix_key_type = typeof payload.pix_key_type === 'string' ? payload.pix_key_type.trim() : payload.pix_key_type;
     this.created_at = typeof payload.created_at === 'string' ? payload.created_at.trim() : payload.created_at;
   }
 }
@@ -94,6 +106,7 @@ class User {
  *         - email
  *         - pwd
  *         - pix_key
+ *         - pix_key_type
  *       properties:
  *         name:
  *           type: string
@@ -109,8 +122,12 @@ class User {
  *           example: "senha"
  *         pix_key:
  *           type: string
- *           description: Chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória
+ *           description: Chave pix
  *           example: "1234abcd-5678-efgh-ijkl-9876mnopqrst"
+ *         pix_key_type:
+ *           type: string
+ *           description: Tipo de chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória
+ *           example: "CPF"
  */
 
 class UserUpdate {
@@ -136,11 +153,18 @@ class UserUpdate {
   })
   pix_key: string;
 
+  @IsString({ message: 'O campo pix_key_type deve ser uma string' })
+  @IsIn(['CPF', 'CNPJ', 'Email', 'Telefone', 'Aleatória'], {
+    message: 'Tipo de Chave Pix inválido. O pix_key_type deve ser um CPF, CNPJ, Email, Telefone ou Aleatória',
+  })
+  pix_key_type: string;
+
   constructor(payload: UserUpdate) {
     this.name = typeof payload.name === 'string' ? payload.name.trim() : payload.name;
     this.email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : payload.email;
     this.pwd = typeof payload.pwd === 'string' ? payload.pwd.trim() : payload.pwd;
     this.pix_key = typeof payload.pix_key === 'string' ? payload.pix_key.trim() : payload.pix_key;
+    this.pix_key_type = typeof payload.pix_key_type === 'string' ? payload.pix_key_type.trim() : payload.pix_key_type;
   }
 }
 

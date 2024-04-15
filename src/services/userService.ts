@@ -50,9 +50,9 @@ export class UserService {
 
   static async updateUser(user_id: string, updatedUserData: any): Promise<{ updatedUser: any | null; error: string | null }> {
     try {
-      const { novoNome, novoEmail, novaSenha, novaPixKey } = updatedUserData;
+      const { novoNome, novoEmail, novaSenha, novaPixKey, novaPixKeyType } = updatedUserData;
   
-      const result = await query('UPDATE users SET name = $1, email = $2, pwd = $3, pix_key = $4 WHERE id = $5 RETURNING *', [novoNome, novoEmail, novaSenha, novaPixKey, user_id]);
+      const result = await query('UPDATE users SET name = $1, email = $2, pwd = $3, pix_key = $4, pix_key_type = $5 WHERE id = $6 RETURNING *', [novoNome, novoEmail, novaSenha, novaPixKey, novaPixKeyType, user_id]);
   
       if (result && result.rows && result.rows.length > 0) {
         const updatedUser = result.rows[0];
