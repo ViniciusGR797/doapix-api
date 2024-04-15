@@ -83,9 +83,9 @@ export class UserService {
     }
   }
 
-  static async recoverUser(user_email: string, newPass: string): Promise<{ recoveredUser: any | null; error: string | null }>{
+  static async recoverUser(user_id: string, newPass: string): Promise<{ recoveredUser: any | null; error: string | null }>{
     try{
-      const result = await query('UPDATE users SET pwd = $1 WHERE email = $2', [newPass, user_email]);
+      const result = await query('UPDATE users SET pwd = $1 WHERE id = $2', [newPass, user_id]);
 
       if (result && result.rows && result.rows.length > 0) {
         const recoveredUser = result.rows[0];

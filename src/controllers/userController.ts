@@ -170,7 +170,7 @@ export class UserController {
   }
 
   static async recoverUserMe(req: Request, res:Response): Promise<Response> {
-      const payload = new UserRecover(req.body);
+      let payload = new UserRecover(req.body);
 
       const errors = await validate(payload);
 
@@ -193,7 +193,7 @@ export class UserController {
 
       const hashPass = await Password.hashPassword(newPassword);
 
-      const { recoveredUser, error: recoveredUserError } = await UserService.recoverUser(payload.email, hashPass);
+      const { recoveredUser, error: recoveredUserError } = await UserService.recoverUser(user.id, hashPass);
 
       if(recoveredUserError){
         return res.status(500).json({ msg: recoveredUserError });
