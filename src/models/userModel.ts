@@ -252,6 +252,17 @@ class UserLogin {
     this.email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : payload.email;
     this.pwd = typeof payload.pwd === 'string' ? payload.pwd.trim() : payload.pwd;
   }
+
 }
 
-export { User, UserUpdate, UserInsert, UserLogin };
+class UserRecover {
+  @IsEmail({}, { message: 'Email inválido' })
+  @IsNotEmpty({ message: 'O campo email é obrigatório' })
+  email: string;
+
+  constructor(payload: UserRecover) {
+    this.email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : payload.email;
+  }
+}
+
+export { User, UserUpdate, UserInsert, UserLogin, UserRecover };

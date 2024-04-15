@@ -249,4 +249,8 @@ router.put('/', authMiddleware, UserController.updateUserMe);
 
 router.delete('/', authMiddleware, UserController.deleteUserMe);
 
+
+//Rota para recuperar a senha
+router.put('/recover', UserController.recoverUserMe);
+
 export default router;

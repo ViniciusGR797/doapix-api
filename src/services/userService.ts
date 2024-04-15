@@ -82,4 +82,20 @@ export class UserService {
       return { deletedUser: null, error: 'Erro interno do servidor' };
     }
   }
+
+  static async recoverUser(user_email: string, newPass: string): Promise<{ recoveredUser: any | null; error: string | null }>{
+    try{
+      const result = await query('UPDATE users SET pwd = $1 WHERE email = $2', [newPass, user_email]);
+
+      if (result && result.rows && result.rows.length > 0) {
+        const recoveredUser = result.rows[0];
+        return { recoveredUser, error: null };
+      }
+
+      return { recoveredUser: null, error: null }
+    }catch(error){
+      console.error('Erro ao recuperar senha', error);
+      return { recoveredUser: null, error: 'Erro interno do servidor' };
+    }
+  }
 }

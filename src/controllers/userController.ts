@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import { UserService } from '../services/userService';
 import { Password } from '../securities/password';
 import { Token } from '../securities/token';
-import { UserUpdate, UserInsert, User, UserLogin } from '../models/userModel';
+import { UserUpdate, UserInsert, User, UserLogin, UserRecover } from '../models/userModel';
 import { validate } from 'class-validator';
+import { EmailOptions, generateRandomPassword, sendEmail } from '../utils/email';
 
 export class UserController {
   static async getUserMe(req: Request, res: Response): Promise<Response> {
@@ -162,10 +163,53 @@ export class UserController {
     }
   
     const { deletedUser, error: deletedUserError } = await UserService.deleteUser(user_id);
-    if (deletedUser) {
+    if (deletedUserError) {
       return res.status(500).json({ msg: deletedUserError });
     }
     return res.status(200).json({ msg: 'Excluído com sucesso' });
+  }
+
+  static async recoverUserMe(req: Request, res:Response): Promise<Response> {
+      const payload = new UserRecover(req.body);
+
+      const errors = await validate(payload);
+
+      if (errors.length > 0) {
+        const firstError = errors[0];
+        const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros invalidos e/ou vazios';
+        return res.status(400).json({ msg: errorMessage });
+      }
+
+      const { user, error: userError } = await UserService.getUserByEmail(payload.email);
+
+      if (userError) {
+        return res.status(500).json({ msg: userError });
+      }
+      if (!user) {
+        return res.status(401).json({ msg: 'Credenciais de usuário inválidas' });
+      }
+
+      const newPassword = await generateRandomPassword(10);
+
+      const hashPass = await Password.hashPassword(newPassword);
+
+      const { recoveredUser, error: recoveredUserError } = await UserService.recoverUser(payload.email, hashPass);
+
+      if(recoveredUserError){
+        return res.status(500).json({ msg: recoveredUserError });
+      }
+
+      const emailOptions: EmailOptions = {
+        to: user.email,
+        subject: 'Redefinição de senha',
+        html: '<h1>Olá</h1> <p>Recebemos sua solicitação de redefinição de senha! Sua nova senha é ${newPassword}</p>',
+        text: 'Olá, recebemos sua solicitação de redefinição de senha! Sua nova senha é ${newPassword}',
+      };
+
+      sendEmail(emailOptions);
+
+      return res.status(200).json({ msg: 'E-mail de redefinição enviado com sucesso!' });
+      
   }
     
 }

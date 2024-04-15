@@ -12,6 +12,15 @@ const config = {
     secretKey: process.env.JWT_SECRET_KEY || 'suaChaveSecretaAqui',
     accessTokenExpires: process.env.JWT_ACCESS_TOKEN_EXPIRES || '10h',
   },
+  email: {
+    host: process.env.EMAIL_HOST || 'smtp.office365.com',
+    port: parseInt(process.env.EMAIL_PORT || '587', 10),
+    secure: Boolean(process.env.EMAIL_SECURE  || false),
+    auth: {
+      user: process.env.EMAIL_AUTH_USER || '',
+      pass: process.env.EMAIL_AUTH_PASS || '',
+    },
+  },
 };
 
 export default config;
