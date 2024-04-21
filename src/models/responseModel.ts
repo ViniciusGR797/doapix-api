@@ -12,10 +12,25 @@
  *     LoginSuccess:
  *       type: object
  *       properties:
+ *         id:
+ *           type: string
+ *           description: Identificador único do usuário
+ *           example: "f1cd0ab3-4f34-4a53-8b2c-594dd917d6ca"
+ *         email:
+ *           type: string
+ *           description: Email do usuário
+ *           example: "email@example.com"
+ *         access_token:
+ *           type: string
+ *           description: Token de acesso do usuário
+ *           example: "<token>"
+ *     RequestRecoverSuccess:
+ *       type: object
+ *       properties:
  *         msg:
  *           type: string
- *           description: Mensagem de sucesso ao fazer login
- *           example: "<token>"
+ *           description: Mensagem de sucesso solicitar recuperação de senha
+ *           example: "Email de solicitação enviado com sucesso"
  *     LoginFail:
  *       type: object
  *       properties:

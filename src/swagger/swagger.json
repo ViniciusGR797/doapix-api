@@ -19,6 +19,282 @@
       }
     },
     "schemas": {
+      "DonationList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Donation"
+        }
+      },
+      "DonationDetails": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "url_image",
+          "description",
+          "state",
+          "category",
+          "goal",
+          "amount_raised",
+          "deadline",
+          "created_at",
+          "user_id",
+          "transactions",
+          "comments"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único da campanha de doação",
+            "example": "fa763c0d-21ad-4151-bd14-00962d3c3a74"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome da campanha de doação",
+            "example": "Doe Amor e Esperança"
+          },
+          "url_image": {
+            "type": "string",
+            "description": "URL da imagem da campanha de doação (formato base64)",
+            "example": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHCBURDw8REREPDw8PDxEPEA8PEREPDw8PGBQZGRgUGBgcIS4lHB4sHxkYJjgnLTU0NjU1GiQ7QDszQC40Nz8BDAwMEA8QHBISGDQhJSExNDQxMTE0NDExNDQ1NDE0NDQ0NDQ0NDQxNDE0MTE0NDQ0NDQ0NDQ0MTQxNDE0NDQ3NP/AABEIAJwBRAMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAABAgADBQYHBP/EAEsQAAIBAwIDBAYGBQkECwAAAAECAAMEEQUSBiExE0FRYQcUIjJxgUJSYnKRshcjM6GxFVNUdIKSlKLT"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da campanha de doação",
+            "example": "Buscamos arrecadar fundos e itens essenciais para apoiar famílias carentes. As doações podem ser feitas pessoalmente ou por transferência bancária. Sua contribuição pode fazer a diferença!"
+          },
+          "state": {
+            "type": "string",
+            "description": "Sigla dos estados do Brasil (Unidades federativas do Brasil), onde se localiza essa campanha de doação",
+            "example": "PR"
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoria que se encaixa essa campanha de doação",
+            "example": "Projetos Sociais / Voluntariado"
+          },
+          "goal": {
+            "type": "string",
+            "description": "Meta de arrecadação monetária da campanha de doação",
+            "example": "$500.00"
+          },
+          "amount_raised": {
+            "type": "string",
+            "description": "Valor monetária já arrecadado na campanha de doação",
+            "example": "$100.00"
+          },
+          "deadline": {
+            "type": "string",
+            "description": "Data limite da campanha de doação, sendo fechada após esse período",
+            "example": "2024-04-24T19:34:02.090Z"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Data de criação da campanha de doação",
+            "example": "2024-03-24T19:34:02.090Z"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Usuário que criou essa campanha de doação",
+            "example": "f1cd0ab3-4f34-4a53-8b2c-594dd917d6ca"
+          },
+          "transactions_count": {
+            "type": "integer",
+            "description": "Quantidade de doações pagas nessa campanha",
+            "example": 15
+          },
+          "comments": {
+            "type": "array",
+            "description": "Lista de comentários solidários dos doadores",
+            "items": {
+              "type": "object",
+              "properties": {
+                "alias": {
+                  "type": "string",
+                  "description": "Apelido do doador (opcional)",
+                  "example": "João Teixeira"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Mensagem solidária do doador",
+                  "example": "🤝 Fiz uma contribuição. Espero que ajude a fazer a diferença!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Donation": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "url_image",
+          "description",
+          "state",
+          "category",
+          "goal",
+          "amount_raised",
+          "deadline",
+          "created_at",
+          "user_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único da campanha de doação",
+            "example": "fa763c0d-21ad-4151-bd14-00962d3c3a74"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome da campanha de doação",
+            "example": "Doe Amor e Esperança"
+          },
+          "url_image": {
+            "type": "string",
+            "description": "URL da imagem da campanha de doação (formato base64)",
+            "example": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHCBURDw8REREPDw8PDxEPEA8PEREPDw8PGBQZGRgUGBgcIS4lHB4sHxkYJjgnLTU0NjU1GiQ7QDszQC40Nz8BDAwMEA8QHBISGDQhJSExNDQxMTE0NDExNDQ1NDE0NDQ0NDQ0NDQxNDE0MTE0NDQ0NDQ0NDQ0MTQxNDE0NDQ3NP/AABEIAJwBRAMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAABAgADBQYHBP/EAEsQAAIBAwIDBAYGBQkECwAAAAECAAMEEQUSBiExE0FRYQcUIjJxgUJSYnKRshcjM6GxFVNUdIKSlKLT"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da campanha de doação",
+            "example": "Buscamos arrecadar fundos e itens essenciais para apoiar famílias carentes. As doações podem ser feitas pessoalmente ou por transferência bancária. Sua contribuição pode fazer a diferença!"
+          },
+          "state": {
+            "type": "string",
+            "description": "Sigla dos estados do Brasil (Unidades federativas do Brasil), onde se localiza essa campanha de doação",
+            "example": "PR"
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoria que se encaixa essa campanha de doação",
+            "example": "Projetos Sociais / Voluntariado"
+          },
+          "goal": {
+            "type": "string",
+            "description": "Meta de arrecadação monetária da campanha de doação",
+            "example": "$500.00"
+          },
+          "amount_raised": {
+            "type": "string",
+            "description": "Valor monetária já arrecadado na campanha de doação",
+            "example": "$100.00"
+          },
+          "deadline": {
+            "type": "string",
+            "description": "Data limite da campanha de doação, sendo fechada após esse período",
+            "example": "2024-04-24T19:34:02.090Z"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Data de criação da campanha de doação",
+            "example": "2024-03-24T19:34:02.090Z"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Usuário que criou essa campanha de doação",
+            "example": "f1cd0ab3-4f34-4a53-8b2c-594dd917d6ca"
+          }
+        }
+      },
+      "DonationUpdate": {
+        "type": "object",
+        "required": [
+          "name",
+          "url_image",
+          "description",
+          "state",
+          "category",
+          "goal",
+          "deadline"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome da campanha de doação",
+            "example": "Doe Amor e Esperança"
+          },
+          "url_image": {
+            "type": "string",
+            "description": "URL da imagem da campanha de doação (formato base64)",
+            "example": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHCBURDw8REREPDw8PDxEPEA8PEREPDw8PGBQZGRgUGBgcIS4lHB4sHxkYJjgnLTU0NjU1GiQ7QDszQC40Nz8BDAwMEA8QHBISGDQhJSExNDQxMTE0NDExNDQ1NDE0NDQ0NDQ0NDQxNDE0MTE0NDQ0NDQ0NDQ0MTQxNDE0NDQ3NP/AABEIAJwBRAMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAABAgADBQYHBP/EAEsQAAIBAwIDBAYGBQkECwAAAAECAAMEEQUSBiExE0FRYQcUIjJxgUJSYnKRshcjM6GxFVNUdIKSlKLT"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da campanha de doação",
+            "example": "Buscamos arrecadar fundos e itens essenciais para apoiar famílias carentes. As doações podem ser feitas pessoalmente ou por transferência bancária. Sua contribuição pode fazer a diferença!"
+          },
+          "state": {
+            "type": "string",
+            "description": "Sigla dos estados do Brasil (Unidades federativas do Brasil), onde se localiza essa campanha de doação",
+            "example": "PR"
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoria que se encaixa essa campanha de doação",
+            "example": "Projetos Sociais / Voluntariado"
+          },
+          "goal": {
+            "type": "string",
+            "description": "Meta de arrecadação monetária da campanha de doação",
+            "example": "$500.00"
+          },
+          "deadline": {
+            "type": "string",
+            "description": "Data limite da campanha de doação, sendo fechada após esse período",
+            "example": "2024-04-24T19:34:02.090Z"
+          }
+        }
+      },
+      "DonationInsert": {
+        "type": "object",
+        "required": [
+          "name",
+          "url_image",
+          "description",
+          "state",
+          "category",
+          "goal",
+          "deadline"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome da campanha de doação",
+            "example": "Doe Amor e Esperança"
+          },
+          "url_image": {
+            "type": "string",
+            "description": "URL da imagem da campanha de doação (formato base64)",
+            "example": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHCBURDw8REREPDw8PDxEPEA8PEREPDw8PGBQZGRgUGBgcIS4lHB4sHxkYJjgnLTU0NjU1GiQ7QDszQC40Nz8BDAwMEA8QHBISGDQhJSExNDQxMTE0NDExNDQ1NDE0NDQ0NDQ0NDQxNDE0MTE0NDQ0NDQ0NDQ0MTQxNDE0NDQ3NP/AABEIAJwBRAMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAABAgADBQYHBP/EAEsQAAIBAwIDBAYGBQkECwAAAAECAAMEEQUSBiExE0FRYQcUIjJxgUJSYnKRshcjM6GxFVNUdIKSlKLT"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da campanha de doação",
+            "example": "Buscamos arrecadar fundos e itens essenciais para apoiar famílias carentes. As doações podem ser feitas pessoalmente ou por transferência bancária. Sua contribuição pode fazer a diferença!"
+          },
+          "state": {
+            "type": "string",
+            "description": "Sigla dos estados do Brasil (Unidades federativas do Brasil), onde se localiza essa campanha de doação",
+            "example": "PR"
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoria que se encaixa essa campanha de doação",
+            "example": "Projetos Sociais / Voluntariado"
+          },
+          "goal": {
+            "type": "string",
+            "description": "Meta de arrecadação monetária da campanha de doação",
+            "example": "$500.00"
+          },
+          "deadline": {
+            "type": "string",
+            "description": "Data limite da campanha de doação, sendo fechada após esse período",
+            "example": "2024-04-24T19:34:02.090Z"
+          }
+        }
+      },
       "DeleteSuccess": {
         "type": "object",
         "properties": {
@@ -32,10 +308,30 @@
       "LoginSuccess": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único do usuário",
+            "example": "f1cd0ab3-4f34-4a53-8b2c-594dd917d6ca"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email do usuário",
+            "example": "email@example.com"
+          },
+          "access_token": {
+            "type": "string",
+            "description": "Token de acesso do usuário",
+            "example": "<token>"
+          }
+        }
+      },
+      "RequestRecoverSuccess": {
+        "type": "object",
+        "properties": {
           "msg": {
             "type": "string",
-            "description": "Mensagem de sucesso ao fazer login",
-            "example": "<token>"
+            "description": "Mensagem de sucesso solicitar recuperação de senha",
+            "example": "Email de solicitação enviado com sucesso"
           }
         }
       },
@@ -99,6 +395,141 @@
           }
         }
       },
+      "TransactionList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Transaction"
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "required": [
+          "id",
+          "txid",
+          "location",
+          "qr_code",
+          "pix_copy_paste",
+          "amount",
+          "alias",
+          "email",
+          "message",
+          "status",
+          "created_at",
+          "donation_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único da transação",
+            "example": "f1cd0ab3-4f34-4a53-8b2c-594dd917d6ca"
+          },
+          "txid": {
+            "type": "string",
+            "description": "Identificador único atribuído uma transação feita com uma criptomoeda na rede blockchain",
+            "example": "7978c0c97ea847e78e8849634473c1f1"
+          },
+          "location": {
+            "type": "string",
+            "description": "Identificador único associado a uma cobrança imediata no sistema de pagamentos instantâneos Pix, responsável por gerar o QR Code correspondente à cobrança",
+            "example": "pix.example.com/qr/v2/9d36b84fc70b478fb95c12729b90ca25"
+          },
+          "qr_code": {
+            "type": "string",
+            "description": "Imagem base64 do QR Code para realizar o pagamento",
+            "example": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmc vMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NSA0NSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMCAwaDQ1djQ1SD"
+          },
+          "pix_copy_paste": {
+            "type": "string",
+            "description": "String permite realizar pagamentos sem a necessidade de escanear um QR Code",
+            "example": "00020101021226830014BR.GOV.BCB.PIX2561qrcodespix.sejaefi.com.br/v2/41e0badf811a4ce6ad8a80b306821fce5204000053000065802BR5905EFISA6008SAOPAULO60070503***61040000"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Valor da transação",
+            "example": "$2,000.00"
+          },
+          "alias": {
+            "type": "string",
+            "description": "Apelido do doador (opcional)",
+            "example": "João Teixeira"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email do doador",
+            "example": "email@example.com"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem solidária do doador",
+            "example": "🤝 Fiz uma contribuição. Espero que ajude a fazer a diferença!"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status da transação",
+            "example": "Pago"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Data de criação da transação",
+            "example": "2024-03-24T19:34:02.090Z"
+          },
+          "donation_id": {
+            "type": "string",
+            "description": "Identificador único da transação da campanha de doação",
+            "example": "fa763c0d-21ad-4151-bd14-00962d3c3a74"
+          }
+        }
+      },
+      "TransactionUpdate": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status da transação",
+            "example": "Aguardando pagamento"
+          }
+        }
+      },
+      "TransactionInsert": {
+        "type": "object",
+        "required": [
+          "amount",
+          "alias",
+          "email",
+          "message",
+          "donation_id"
+        ],
+        "properties": {
+          "amount": {
+            "type": "string",
+            "description": "Valor da transação",
+            "example": "$2,000.00"
+          },
+          "alias": {
+            "type": "string",
+            "description": "Apelido do doador (opcional)",
+            "example": "Maria Souza"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email do doador",
+            "example": "maria@example.com"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem solidária do doador",
+            "example": "💕 Doei para apoiar a sua missão. Vamos mudar o mundo juntos!"
+          },
+          "donation_id": {
+            "type": "string",
+            "description": "Identificador único da transação da campanha solidária",
+            "example": "49a3d66e-f2b9-487c-b47d-38b2f732424a"
+          }
+        }
+      },
       "User": {
         "type": "object",
         "required": [
@@ -106,7 +537,9 @@
           "name",
           "email",
           "pwd",
+          "code_recover_pwd",
           "pix_key",
+          "pix_key_type",
           "created_at"
         ],
         "properties": {
@@ -127,13 +560,23 @@
           },
           "pwd": {
             "type": "string",
-            "description": "Senha do usuário",
-            "example": "senha"
+            "description": "Senha do usuário com hash",
+            "example": "$2a$10$LuXW4dPEXrdz6WIBu4KrjeSyUAYC77g7BpGL1pbQflABIIxwG5/Zm"
+          },
+          "code_recover_pwd": {
+            "type": "string",
+            "description": "Código de recuperação de senha",
+            "example": "123456"
           },
           "pix_key": {
             "type": "string",
-            "description": "Chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória",
+            "description": "Chave pix",
             "example": "1234abcd-5678-efgh-ijkl-9876mnopqrst"
+          },
+          "pix_key_type": {
+            "type": "string",
+            "description": "Tipo de chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória",
+            "example": "Aleatória"
           },
           "created_at": {
             "type": "string",
@@ -148,7 +591,8 @@
           "name",
           "email",
           "pwd",
-          "pix_key"
+          "pix_key",
+          "pix_key_type"
         ],
         "properties": {
           "name": {
@@ -163,13 +607,18 @@
           },
           "pwd": {
             "type": "string",
-            "description": "Senha do usuário",
-            "example": "senha"
+            "description": "Senha do usuário sem hash",
+            "example": "senha123"
           },
           "pix_key": {
             "type": "string",
-            "description": "Chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória",
+            "description": "Chave pix",
             "example": "1234abcd-5678-efgh-ijkl-9876mnopqrst"
+          },
+          "pix_key_type": {
+            "type": "string",
+            "description": "Tipo de chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória",
+            "example": "CPF"
           }
         }
       },
@@ -193,8 +642,8 @@
           },
           "pwd": {
             "type": "string",
-            "description": "Senha do usuário",
-            "example": "senha"
+            "description": "Senha do usuário sem hash",
+            "example": "senha123"
           }
         }
       },
@@ -212,19 +661,570 @@
           },
           "pwd": {
             "type": "string",
-            "description": "Senha do usuário",
-            "example": "senha"
+            "description": "Senha do usuário sem hash",
+            "example": "senha123"
+          }
+        }
+      },
+      "UserRequestRecover": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email do usuário",
+            "example": "email@example.com"
+          }
+        }
+      },
+      "UserRecoverPwd": {
+        "type": "object",
+        "required": [
+          "email",
+          "code_recover_pwd",
+          "pwd"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email do usuário",
+            "example": "email@example.com"
+          },
+          "code_recover_pwd": {
+            "type": "string",
+            "description": "Código de recuperação de senha",
+            "example": "123456"
+          },
+          "pwd": {
+            "type": "string",
+            "description": "Senha do usuário sem hash",
+            "example": "senha123"
           }
         }
       }
     }
   },
-  "security": [
-    {
-      "jwt": []
-    }
-  ],
   "paths": {
+    "/donations": {
+      "get": {
+        "summary": "Vizualiza todas campanhas de doação",
+        "description": "Retorna as informações de todas campanhas de doação",
+        "tags": [
+          "Donation"
+        ],
+        "operationId": "get_all_donation",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DonationList"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria uma nova campanha de doação",
+        "description": "Cria uma nova campanha de doação com base nos dados fornecidos no corpo da requisição",
+        "tags": [
+          "Donation"
+        ],
+        "operationId": "create_donation",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DonationInsert"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Donation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFound",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/donations/{donation_id}": {
+      "parameters": [
+        {
+          "name": "donation_id",
+          "in": "path",
+          "required": true,
+          "description": "ID da campanha de doação que será deletada",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Visualiza campanha de doação pelo id",
+        "description": "Retorna as informações da campanha de doação pelo id",
+        "tags": [
+          "Donation"
+        ],
+        "operationId": "get_donation_by_id",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DonationDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFound",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza campanha de doação",
+        "description": "Atualiza as informações da campanha de doação desejada, desde que o usuário que está realizando a edição seja o mesmo que a criou",
+        "tags": [
+          "Donation"
+        ],
+        "operationId": "update_donation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DonationUpdate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Donation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Forbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFound",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove campanha de doação",
+        "description": "Apaga campanha de doação, desde que o usuário que está realizando a exclusão seja o mesmo que a criou",
+        "tags": [
+          "Donation"
+        ],
+        "operationId": "delete_donation",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Forbidden"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFound",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/donation/{donation_id}": {
+      "parameters": [
+        {
+          "name": "donation_id",
+          "in": "path",
+          "required": true,
+          "description": "ID da campanha de doação que será obtido as transações",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Vizualiza todas transações solidárias de uma campanha de doação",
+        "description": "Retorna as informações de todas transações solidárias de uma campanha de doação",
+        "tags": [
+          "Transaction"
+        ],
+        "operationId": "get_all_transaction_by_donation",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFound",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/{transaction_id}": {
+      "parameters": [
+        {
+          "name": "transaction_id",
+          "in": "path",
+          "required": true,
+          "description": "ID da transação solidária que será visualizada",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Vizualiza transação solidária pelo id",
+        "description": "Retorna as informações de transação solidária pelo id",
+        "tags": [
+          "Transaction"
+        ],
+        "operationId": "get_transaction_by_id",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transaction"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFound",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions": {
+      "post": {
+        "summary": "Cria uma nova transação solidária",
+        "description": "Cria uma nova transação solidária com base nos dados fornecidos no corpo da requisição",
+        "tags": [
+          "Transaction"
+        ],
+        "operationId": "create_transaction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionInsert"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transaction"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFound",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "summary": "Vizualiza o usuário logado",
@@ -563,9 +1563,141 @@
           }
         }
       }
+    },
+    "/users/request-recover": {
+      "put": {
+        "summary": "Solicitar recuperação de senha",
+        "description": "Realiza uma solicitação de redefinição de senha. Será enviado um email com código de verificação",
+        "tags": [
+          "User"
+        ],
+        "operationId": "request_recover",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRequestRecover"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestRecoverSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFound",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/recover-pwd": {
+      "put": {
+        "summary": "Redefinição de senha",
+        "description": "Realiza troca de senha, quando esquece a senha.",
+        "tags": [
+          "User"
+        ],
+        "operationId": "recover_pwd",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRecoverPwd"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFound",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "tags": [
+    {
+      "name": "Donation",
+      "description": "Rotas para manipulação de campanhas de doação"
+    },
+    {
+      "name": "Transaction",
+      "description": "Rotas para manipulação de transações solidárias"
+    },
     {
       "name": "User",
       "description": "Rotas para manipulação de usuários"

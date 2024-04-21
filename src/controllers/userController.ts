@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { UserService } from '../services/userService';
 import { Password } from '../securities/password';
 import { Token } from '../securities/token';
-import { UserUpdate, UserInsert, User, UserLogin, UserRecover } from '../models/userModel';
+import { UserUpdate, UserInsert, User, UserLogin, UserRequestRecover, UserRecoverPwd } from '../models/userModel';
 import { validate } from 'class-validator';
-import { EmailOptions, generateRandomPassword, sendEmail } from '../utils/email';
+import { EmailOptions, TemplateEmail, generateRandomCode, generateRandomPassword, sendEmail } from '../utils/email';
 
 export class UserController {
   static async getUserMe(req: Request, res: Response): Promise<Response> {
@@ -62,7 +62,7 @@ export class UserController {
   }
 
   static async loginUser(req: Request, res: Response): Promise<Response> {
-    try{
+    try {
       const payload = new UserLogin(req.body);
 
       const errors = await validate(payload);
@@ -90,12 +90,12 @@ export class UserController {
 
       const token = Token.generateToken(user.id);
 
-      return res.status(200).json({ 
-        access_token: token,
+      return res.status(200).json({
         id: user.id,
         email: user.email,
-       });
-    }catch(err){
+        access_token: token,
+      });
+    } catch (err) {
       console.error('Erro ao criar usuário:', err);
       return res.status(500).json({ msg: 'Erro interno do servidor' });
     }
@@ -103,7 +103,7 @@ export class UserController {
 
   static async updateUserMe(req: Request, res: Response): Promise<Response> {
     const user_id = req.user_id;
-  
+
     const { user, error: getUserError } = await UserService.getUserById(user_id);
 
     if (getUserError) {
@@ -112,17 +112,16 @@ export class UserController {
     if (!user) {
       return res.status(404).json({ msg: 'Nenhum dado encontrado' });
     }
-  
+
     const payload = new UserUpdate(req.body);
-  
+
     const errors = await validate(payload);
-    
     if (errors.length > 0) {
       const firstError = errors[0];
       const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros inválidos e/ou vazios';
       return res.status(400).json({ msg: errorMessage });
     }
-  
+
     if (payload.email !== user.email) {
       const { user: existingUser, error: getUserEmailError } = await UserService.getUserByEmail(payload.email);
       if (getUserEmailError) {
@@ -132,7 +131,7 @@ export class UserController {
         return res.status(400).json({ msg: 'Email já cadastrado no sistema' });
       }
     }
-  
+
     const updatedUserData = {
       novoNome: payload.name || user.name,
       novoEmail: payload.email || user.email,
@@ -140,19 +139,18 @@ export class UserController {
       novaPixKey: payload.pix_key || user.pix_key,
       novaPixKeyType: payload.pix_key_type || user.pix_key_type
     };
-  
+
     const { updatedUser, error: updateUserError } = await UserService.updateUser(user_id, updatedUserData);
     if (updateUserError) {
       return res.status(500).json({ msg: updateUserError });
     }
     return res.status(200).json(updatedUser);
   }
-  
 
   static async deleteUserMe(req: Request, res: Response): Promise<Response> {
 
     const user_id = req.user_id;
-  
+
     const { user, error: getUserError } = await UserService.getUserById(user_id);
 
     if (getUserError) {
@@ -161,7 +159,7 @@ export class UserController {
     if (!user) {
       return res.status(404).json({ msg: 'Nenhum dado encontrado' });
     }
-  
+
     const { deletedUser, error: deletedUserError } = await UserService.deleteUser(user_id);
     if (deletedUserError) {
       return res.status(500).json({ msg: deletedUserError });
@@ -169,47 +167,69 @@ export class UserController {
     return res.status(200).json({ msg: 'Excluído com sucesso' });
   }
 
-  static async recoverUserMe(req: Request, res:Response): Promise<Response> {
-      let payload = new UserRecover(req.body);
+  static async requestRecover(req: Request, res: Response): Promise<Response> {
+    const payload = new UserRequestRecover(req.body);
 
-      const errors = await validate(payload);
+    const errors = await validate(payload);
+    if (errors.length > 0) {
+      const firstError = errors[0];
+      const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros inválidos e/ou vazios';
+      return res.status(400).json({ msg: errorMessage });
+    }
 
-      if (errors.length > 0) {
-        const firstError = errors[0];
-        const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros invalidos e/ou vazios';
-        return res.status(400).json({ msg: errorMessage });
-      }
+    const { user, error: userError } = await UserService.getUserByEmail(payload.email);
+    if (userError) {
+      return res.status(500).json({ msg: userError });
+    }
+    if (!user) {
+      return res.status(404).json({ msg: 'Nenhum dado encontrado' });
+    }
 
-      const { user, error: userError } = await UserService.getUserByEmail(payload.email);
+    const codeRecoverPwd = await generateRandomCode(6);
 
-      if (userError) {
-        return res.status(500).json({ msg: userError });
-      }
-      if (!user) {
-        return res.status(401).json({ msg: 'Credenciais de usuário inválidas' });
-      }
+    const { requestUser, error: requestRecoverError } = await UserService.requestRecover(user.id, codeRecoverPwd);
+    if (requestRecoverError) {
+      return res.status(500).json({ msg: requestRecoverError });
+    }
 
-      const newPassword = await generateRandomPassword(10);
+    const emailOptions: EmailOptions = {
+      to: user.email,
+      subject: 'Solicitação de recuperação de senha',
+      html: TemplateEmail.requestRecover(requestUser),
+    };
 
-      const hashPass = await Password.hashPassword(newPassword);
+    sendEmail(emailOptions);
 
-      const { recoveredUser, error: recoveredUserError } = await UserService.recoverUser(user.id, hashPass);
-
-      if(recoveredUserError){
-        return res.status(500).json({ msg: recoveredUserError });
-      }
-
-      const emailOptions: EmailOptions = {
-        to: user.email,
-        subject: 'Redefinição de senha',
-        html: '<h1>Olá</h1> <p>Recebemos sua solicitação de redefinição de senha! Sua nova senha é ${newPassword}</p>',
-        text: 'Olá, recebemos sua solicitação de redefinição de senha! Sua nova senha é ${newPassword}',
-      };
-
-      sendEmail(emailOptions);
-
-      return res.status(200).json({ msg: 'E-mail de redefinição enviado com sucesso!' });
-      
+    return res.status(200).json({ msg: 'Email de solicitação enviado com sucesso' });
   }
-    
+
+  static async recoverPwd(req: Request, res: Response): Promise<Response> {
+    const payload = new UserRecoverPwd(req.body);
+    const errors = await validate(payload);
+    if (errors.length > 0) {
+      const firstError = errors[0];
+      const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros inválidos e/ou vazios';
+      return res.status(400).json({ msg: errorMessage });
+    }
+
+    const { user, error: userError } = await UserService.getUserByEmail(payload.email);
+    if (userError) {
+      return res.status(500).json({ msg: userError });
+    }
+    if (!user) {
+      return res.status(404).json({ msg: 'Nenhum dado encontrado' });
+    }
+
+    if(user.code_recover_pwd !== payload.code_recover_pwd){
+      return res.status(400).json({ msg: 'Código de recuperação inválido' });
+    }
+
+    const newPwd = await Password.hashPassword(payload.pwd || user.pwd);
+
+    const { recoverUser, error: recoverPwdError } = await UserService.recoverPwd(user.id, newPwd);
+    if (recoverPwdError) {
+      return res.status(500).json({ msg: recoverPwdError });
+    }
+    return res.status(200).json(recoverUser);
+  }
 }

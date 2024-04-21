@@ -5,6 +5,7 @@ CREATE TABLE users (
     name VARCHAR(255),
     email VARCHAR(255) UNIQUE, 
     pwd VARCHAR(255),
+    code_recover_pwd VARCHAR(6),
     pix_key VARCHAR(255),
     pix_key_type VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

@@ -11,6 +11,7 @@ import { IsString, IsEmail, Matches, IsNotEmpty, IsIn } from 'class-validator';
  *         - name
  *         - email
  *         - pwd
+ *         - code_recover_pwd
  *         - pix_key
  *         - pix_key_type
  *         - created_at
@@ -29,8 +30,12 @@ import { IsString, IsEmail, Matches, IsNotEmpty, IsIn } from 'class-validator';
  *           example: "email@example.com"
  *         pwd:
  *           type: string
- *           description: Senha do usuário
- *           example: "senha"
+ *           description: Senha do usuário com hash
+ *           example: "$2a$10$LuXW4dPEXrdz6WIBu4KrjeSyUAYC77g7BpGL1pbQflABIIxwG5/Zm"
+ *         code_recover_pwd:
+ *           type: string
+ *           description: Código de recuperação de senha
+ *           example: "123456"
  *         pix_key:
  *           type: string
  *           description: Chave pix
@@ -38,7 +43,7 @@ import { IsString, IsEmail, Matches, IsNotEmpty, IsIn } from 'class-validator';
  *         pix_key_type:
  *           type: string
  *           description: Tipo de chave pix que pode ser CPF, CNPJ, Número de telefone, Email ou Chave aleatória
- *           example: "CPF"
+ *           example: "Aleatória"
  *         created_at:
  *           type: string
  *           description: Data de criação do usuário
@@ -65,6 +70,9 @@ class User {
   })
   pwd: string;
 
+  @IsString({ message: 'O campo code_recover_pwd deve ser uma string' })
+  code_recover_pwd: string;
+
   @IsString({ message: 'O campo pix_key deve ser uma string' })
   @Matches(/^(?:\d{11}|\d{14}|\d{10,11}|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})$/, {
     message: 'Chave Pix inválido. A pix_key deve ser um CPF, CNPJ, Número de telefone, Email ou Chave aleatória',
@@ -89,6 +97,7 @@ class User {
     this.name = typeof payload.name === 'string' ? payload.name.trim() : payload.name;
     this.email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : payload.email;
     this.pwd = typeof payload.pwd === 'string' ? payload.pwd.trim() : payload.pwd;
+    this.code_recover_pwd = typeof payload.code_recover_pwd === 'string' ? payload.code_recover_pwd.trim() : payload.code_recover_pwd;
     this.pix_key = typeof payload.pix_key === 'string' ? payload.pix_key.trim() : payload.pix_key;
     this.pix_key_type = typeof payload.pix_key_type === 'string' ? payload.pix_key_type.trim() : payload.pix_key_type;
     this.created_at = typeof payload.created_at === 'string' ? payload.created_at.trim() : payload.created_at;
@@ -118,8 +127,8 @@ class User {
  *           example: "email@example.com"
  *         pwd:
  *           type: string
- *           description: Senha do usuário
- *           example: "senha"
+ *           description: Senha do usuário sem hash
+ *           example: "senha123"
  *         pix_key:
  *           type: string
  *           description: Chave pix
@@ -189,8 +198,8 @@ class UserUpdate {
  *           example: "email@example.com"
  *         pwd:
  *           type: string
- *           description: Senha do usuário
- *           example: "senha"
+ *           description: Senha do usuário sem hash
+ *           example: "senha123"
  */
 
 class UserInsert {
@@ -232,8 +241,8 @@ class UserInsert {
  *           example: "email@example.com"
  *         pwd:
  *           type: string
- *           description: Senha do usuário
- *           example: "senha"
+ *           description: Senha do usuário sem hash
+ *           example: "senha123"
  */
 
 class UserLogin {
@@ -252,17 +261,78 @@ class UserLogin {
     this.email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : payload.email;
     this.pwd = typeof payload.pwd === 'string' ? payload.pwd.trim() : payload.pwd;
   }
-
 }
 
-class UserRecover {
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserRequestRecover:
+ *       type: object
+ *       required:
+ *         - email
+ *       properties:
+ *         email:
+ *           type: string
+ *           description: Email do usuário
+ *           example: "email@example.com"
+ */
+
+class UserRequestRecover {
   @IsEmail({}, { message: 'Email inválido' })
   @IsNotEmpty({ message: 'O campo email é obrigatório' })
   email: string;
 
-  constructor(payload: UserRecover) {
+  constructor(payload: UserRequestRecover) {
     this.email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : payload.email;
   }
 }
 
-export { User, UserUpdate, UserInsert, UserLogin, UserRecover };
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserRecoverPwd:
+ *       type: object
+ *       required:
+ *         - email
+ *         - code_recover_pwd
+ *         - pwd
+ *       properties:
+ *         email:
+ *           type: string
+ *           description: Email do usuário
+ *           example: "email@example.com"
+ *         code_recover_pwd:
+ *           type: string
+ *           description: Código de recuperação de senha
+ *           example: "123456"
+ *         pwd:
+ *           type: string
+ *           description: Senha do usuário sem hash
+ *           example: "senha123"
+ */
+
+class UserRecoverPwd {
+  @IsEmail({}, { message: 'Email inválido' })
+  @IsNotEmpty({ message: 'O campo email é obrigatório' })
+  email: string;
+
+  @IsString({ message: 'O campo code_recover_pwd deve ser uma string' })
+  code_recover_pwd: string;
+
+  @IsString({ message: 'O campo pwd é obrigatório' })
+  @IsNotEmpty({ message: 'O campo pwd é obrigatório' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
+    message: 'Senha fraca. A senha deve ter no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial (@ $ ! % * ? &)',
+  })
+  pwd: string;
+
+  constructor(payload: UserRecoverPwd) {
+    this.email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : payload.email;
+    this.code_recover_pwd = typeof payload.code_recover_pwd === 'string' ? payload.code_recover_pwd.trim().toLowerCase() : payload.code_recover_pwd;
+    this.pwd = typeof payload.pwd === 'string' ? payload.pwd.trim() : payload.pwd;
+  }
+}
+
+export { User, UserUpdate, UserInsert, UserLogin, UserRequestRecover, UserRecoverPwd };

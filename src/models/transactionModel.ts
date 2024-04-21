@@ -4,6 +4,16 @@ import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
  * @swagger
  * components:
  *   schemas:
+ *     TransactionList:
+ *       type: array
+ *       items:
+ *         $ref: "#/components/schemas/Transaction"
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
  *     Transaction:
  *       type: object
  *       required:
@@ -17,9 +27,8 @@ import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
  *         - email
  *         - message
  *         - status
- *         - create_at
+ *         - created_at
  *         - donation_id
- *         - user_id
  *       properties:
  *         id:
  *           type: string
@@ -61,10 +70,14 @@ import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
  *           type: string
  *           description: Status da transação
  *           example: "Pago"
+ *         created_at:
+ *           type: string
+ *           description: Data de criação da transação
+ *           example: "2024-03-24T19:34:02.090Z"
  *         donation_id:
  *           type: string
- *           description: Identificador único da transação da campanha solidária
- *           example: "96066c6a-7312-4108-a595-c8704c759ce5"
+ *           description: Identificador único da transação da campanha de doação
+ *           example: "fa763c0d-21ad-4151-bd14-00962d3c3a74"
  */
 
 class Transaction {
@@ -93,7 +106,6 @@ class Transaction {
     amount: string;
 
     @IsString({ message: 'O campo alias deve ser uma string' })
-    @IsNotEmpty({ message: 'O campo alias é obrigatório' })
     alias: string;
 
     @IsEmail({}, { message: 'Email inválido' })

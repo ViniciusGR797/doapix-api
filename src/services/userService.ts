@@ -83,19 +83,35 @@ export class UserService {
     }
   }
 
-  static async recoverUser(user_id: string, newPass: string): Promise<{ recoveredUser: any | null; error: string | null }>{
+  static async requestRecover(user_id: string, codeRecoverPwd: string): Promise<{ requestUser: any | null; error: string | null }>{
     try{
-      const result = await query('UPDATE users SET pwd = $1 WHERE id = $2', [newPass, user_id]);
+      const result = await query('UPDATE users SET code_recover_pwd = $1 WHERE id = $2', [codeRecoverPwd, user_id]);
 
       if (result && result.rows && result.rows.length > 0) {
-        const recoveredUser = result.rows[0];
-        return { recoveredUser, error: null };
+        const requestUser = result.rows[0];
+        return { requestUser, error: null };
       }
 
-      return { recoveredUser: null, error: null }
+      return { requestUser: null, error: null }
     }catch(error){
       console.error('Erro ao recuperar senha', error);
-      return { recoveredUser: null, error: 'Erro interno do servidor' };
+      return { requestUser: null, error: 'Erro interno do servidor' };
+    }
+  }
+
+  static async recoverPwd(user_id: string, newPwd: string): Promise<{ recoverUser: any | null; error: string | null }>{
+    try{
+      const result = await query('UPDATE users SET pwd = $1 WHERE id = $2', [newPwd, user_id]);
+
+      if (result && result.rows && result.rows.length > 0) {
+        const recoverUser = result.rows[0];
+        return { recoverUser, error: null };
+      }
+
+      return { recoverUser: null, error: null }
+    }catch(error){
+      console.error('Erro ao recuperar senha', error);
+      return { recoverUser: null, error: 'Erro interno do servidor' };
     }
   }
 }

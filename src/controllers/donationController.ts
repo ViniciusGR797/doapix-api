@@ -41,23 +41,24 @@ export class DonationController {
     }
     
     const comments = transactions ? transactions.map(item => ({
-      [item.alias]: item.message
+      alias: item.alias,
+      message: item.message
     })) : [];
 
     return res.status(200).json({
       id: donation.id,
-      url_image: donation.url_image,
       name: donation.name,
+      url_image: donation.url_image,
       description: donation.description,
+      state: donation.state,
+      category: donation.category,
       goal: donation.goal,
       amount_raised: donation.amount_raised,
-      state: donation.state,
-      created_at: donation.created_at,
       deadline: donation.deadline,
-      category: donation.category,
-      transactions: comments.length,
-      comments: comments,
+      created_at: donation.created_at,
       user_id: donation.user_id,
+      transactions_count: comments.length,
+      comments: comments,
     });
   }
 
@@ -93,15 +94,23 @@ export class DonationController {
   }
 
   static async updateDonation(req: Request, res: Response): Promise<Response> {
+    const user_id = req.user_id;
     const donationId = req.params.donation_id;
 
-    const { donation, error: getDonationError } = await DonationService.getDonationById(donationId);
+    if (!validarUUID(donationId)) {
+      return res.status(400).json({ msg: 'ID da donation inválido' });
+    }
 
+    const { donation, error: getDonationError } = await DonationService.getDonationById(donationId);
     if (getDonationError) {
       return res.status(500).json({ msg: getDonationError });
     }
     if (!donation) {
       return res.status(404).json({ msg: 'Nenhum dado encontrado' });
+    }
+
+    if(user_id !== donation.user_id){
+      return res.status(400).json({ msg: 'Apenas o usuário que criou essa campanha pode editar' });
     }
 
     const payload = new DonationUpdate(req.body);
@@ -132,15 +141,23 @@ export class DonationController {
   }
 
   static async deleteDonation(req: Request, res: Response): Promise<Response> {
+    const user_id = req.user_id;
     const donationId = req.params.donation_id;
 
-    const { donation, error: getDonationError } = await DonationService.getDonationById(donationId);
+    if (!validarUUID(donationId)) {
+      return res.status(400).json({ msg: 'ID da donation inválido' });
+    }
 
+    const { donation, error: getDonationError } = await DonationService.getDonationById(donationId);
     if (getDonationError) {
       return res.status(500).json({ msg: getDonationError });
     }
     if (!donation) {
       return res.status(404).json({ msg: 'Nenhum dado encontrado' });
+    }
+
+    if(user_id !== donation.user_id){
+      return res.status(400).json({ msg: 'Apenas o usuário que criou essa campanha pode excluir' });
     }
 
     const { deletedDonation, error: deletedDonationError } = await DonationService.deleteDonation(donationId);

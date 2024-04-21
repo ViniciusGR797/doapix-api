@@ -249,8 +249,92 @@ router.put('/', authMiddleware, UserController.updateUserMe);
 
 router.delete('/', authMiddleware, UserController.deleteUserMe);
 
+/**
+ * @swagger
+ * /users/request-recover:
+ *   put:
+ *     summary: Solicitar recuperação de senha
+ *     description: Realiza uma solicitação de redefinição de senha. Será enviado um email com código de verificação
+ *     tags:
+ *       - User
+ *     operationId: request_recover
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UserRequestRecover"
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/RequestRecoverSuccess"
+ *       400:
+ *         description: BadRequest
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/BadRequest"
+ *       404:
+ *         description: NotFound
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/NotFound"
+ *       500:
+ *         description: InternalServerError
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/InternalServerError"
+ */
 
-//Rota para recuperar a senha
-router.put('/recover', UserController.recoverUserMe);
+router.put('/request-recover', UserController.requestRecover);
+
+/**
+ * @swagger
+ * /users/recover-pwd:
+ *   put:
+ *     summary: Redefinição de senha
+ *     description: Realiza troca de senha, quando esquece a senha.
+ *     tags:
+ *       - User
+ *     operationId: recover_pwd
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UserRecoverPwd"
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/User"
+ *       400:
+ *         description: BadRequest
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/BadRequest"
+ *       404:
+ *         description: NotFound
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/NotFound"
+ *       500:
+ *         description: InternalServerError
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/InternalServerError"
+ */
+
+router.put('/recover-pwd', UserController.recoverPwd);
 
 export default router;

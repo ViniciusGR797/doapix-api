@@ -47,11 +47,6 @@ const swaggerOptions = {
         },
       },
     },
-    security: [
-      {
-        jwt: [],
-      },
-    ],
   },
   apis: ['./src/routes/*.ts', './src/models/*.ts'],
 };
