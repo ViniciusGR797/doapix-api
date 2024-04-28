@@ -63,7 +63,7 @@ export class DonationController {
   }
 
   static async createDonation(req: Request, res: Response): Promise<Response> {
-    let payload = new DonationInsert(req.body);
+    const payload = new DonationInsert(req.body);
     const user_id = req.user_id;
 
     const errors = await validate(payload);

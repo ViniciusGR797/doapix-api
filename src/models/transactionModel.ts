@@ -1,4 +1,4 @@
-import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
+import { IsString, IsEmail, Matches, IsNotEmpty, IsInt } from 'class-validator';
 
 /**
  * @swagger
@@ -19,6 +19,7 @@ import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
  *       required:
  *         - id
  *         - txid
+ *         - loc_id
  *         - location
  *         - qr_code
  *         - pix_copy_paste
@@ -38,6 +39,10 @@ import { IsString, IsEmail, Matches, IsNotEmpty } from 'class-validator';
  *           type: string
  *           description: Identificador único atribuído uma transação feita com uma criptomoeda na rede blockchain
  *           example: "7978c0c97ea847e78e8849634473c1f1"
+ *         loc_id:
+ *           type: number
+ *           description: Identificador único associado a location
+ *           example: 10
  *         location:
  *           type: string
  *           description: Identificador único associado a uma cobrança imediata no sistema de pagamentos instantâneos Pix, responsável por gerar o QR Code correspondente à cobrança
@@ -89,6 +94,10 @@ class Transaction {
     @IsNotEmpty({ message: 'O campo txid é obrigatório' })
     txid: string;
 
+    @IsInt({ message: 'O campo loc_id deve ser uma inteiro' })
+    @IsNotEmpty({ message: 'O campo loc_id é obrigatório' })
+    loc_id: number;
+
     @IsString({ message: 'O campo location deve ser uma string' })
     @IsNotEmpty({ message: 'O campo location é obrigatório' })
     location: string;
@@ -133,6 +142,7 @@ class Transaction {
     constructor(payload: Transaction) {
         this.id = typeof payload.id === 'string' ? payload.id.trim() : payload.id;
         this.txid = typeof payload.txid === 'string' ? payload.txid.trim() : payload.txid;
+        this.loc_id = typeof payload.loc_id === 'number' ? payload.loc_id : 0;
         this.location = typeof payload.location === 'string' ? payload.location.trim() : payload.location;
         this.qr_code = typeof payload.qr_code === 'string' ? payload.qr_code.trim() : payload.qr_code;
         this.pix_copy_paste = typeof payload.pix_copy_paste === 'string' ? payload.pix_copy_paste.trim() : payload.pix_copy_paste;

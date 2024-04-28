@@ -29,6 +29,7 @@ CREATE TABLE donations (
 CREATE TABLE transactions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     txid VARCHAR(255),
+    loc_id INTEGER,
     location TEXT,
     qr_code TEXT,
     pix_copy_paste TEXT,

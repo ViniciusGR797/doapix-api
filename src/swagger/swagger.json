@@ -406,6 +406,7 @@
         "required": [
           "id",
           "txid",
+          "loc_id",
           "location",
           "qr_code",
           "pix_copy_paste",
@@ -427,6 +428,11 @@
             "type": "string",
             "description": "Identificador único atribuído uma transação feita com uma criptomoeda na rede blockchain",
             "example": "7978c0c97ea847e78e8849634473c1f1"
+          },
+          "loc_id": {
+            "type": "number",
+            "description": "Identificador único associado a location",
+            "example": 10
           },
           "location": {
             "type": "string",

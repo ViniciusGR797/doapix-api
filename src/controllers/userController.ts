@@ -23,7 +23,7 @@ export class UserController {
   }
 
   static async createUser(req: Request, res: Response): Promise<Response> {
-    let payload = new UserInsert(req.body);
+    const payload = new UserInsert(req.body);
 
     const errors = await validate(payload);
     if (errors.length > 0) {
