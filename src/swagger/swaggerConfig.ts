@@ -53,6 +53,7 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
-const swaggerSpecJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'swagger.json'), 'utf8'));
+const swaggerJsonPath = path.join(__dirname, 'swagger.json');
+const swaggerSpecJson = fs.existsSync(swaggerJsonPath) ? JSON.parse(fs.readFileSync(swaggerJsonPath, 'utf8')) : null;
 
 export { swaggerSpec, swaggerSpecJson };

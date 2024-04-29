@@ -9,7 +9,8 @@
     "start": "npx ts-node src/server.ts",
     "dev": "nodemon --exec ts-node src/server.ts",
     "build": "tsc",
-    "swagger": "npx ts-node src/swagger/generateSwaggerJson.ts"
+    "swagger": "npx ts-node src/swagger/generateSwaggerJson.ts",
+    "vercel-build": "npx ts-node src/swagger/generateSwaggerJson.ts"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
