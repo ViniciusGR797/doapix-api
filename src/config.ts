@@ -13,12 +13,12 @@ const config = {
     accessTokenExpires: process.env.JWT_ACCESS_TOKEN_EXPIRES || '10h',
   },
   email: {
-    host: process.env.EMAIL_HOST || 'smtp.office365.com',
-    port: parseInt(process.env.EMAIL_PORT || '587', 10),
-    secure: Boolean(process.env.EMAIL_SECURE || false),
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT || '465', 10),
+    secure: Boolean(process.env.EMAIL_SECURE || true),
     auth: {
-      user: process.env.EMAIL_AUTH_USER || '',
-      pass: process.env.EMAIL_AUTH_PASS || '',
+      user: process.env.EMAIL_AUTH_USER || 'support@doapix.com',
+      pass: process.env.EMAIL_AUTH_PASS || 'password123',
     },
   },
   pix: {
