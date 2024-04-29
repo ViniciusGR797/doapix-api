@@ -25,7 +25,8 @@ const config = {
     url: process.env.PIX_URL || 'https://api-pix.com.br',
     clientId: process.env.PIX_CLIENT_ID || 'Client_Id_FakeSample1234567890abcdef12345678',
     clientSecret: process.env.PIX_CLIENT_SECRET || 'Client_Secret_FakeSample1234567890abcdef12345678',
-    certificate: process.env.PIX_CERTIFICATE || 'homologacao.p12.sample',
+    certificateFile: process.env.PIX_CERTIFICATE_FILE || 'homologacao.p12.sample',
+    certificateBase64: process.env.PIX_CERTIFICATE_BASE64 || '',
     pixKey: process.env.PIX_KEY || '1234abcd-5678-efgh-ijkl-9876mnopqrst',
   },
 };

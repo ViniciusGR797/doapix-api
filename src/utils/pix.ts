@@ -4,12 +4,30 @@ import path from 'path';
 import https from 'https';
 import config from '../config';
 
-const certificate = fs.readFileSync(
-    path.resolve(__dirname, `../../certificates/${config.pix.certificate}`)
-);
+const loadCertificate = () => {
+    const certificatePath = path.resolve(__dirname, `../../certificates/${config.pix.certificateFile}`);
+    let certificate;
+
+    if (fs.existsSync(certificatePath)) {
+        console.log("Usando arquivo")
+        certificate = fs.readFileSync(certificatePath);
+    } else {
+        const p12FileBase64 = config.pix.certificateBase64;
+
+        if (p12FileBase64) {
+            const p12Buffer = Buffer.from(p12FileBase64, 'base64');
+            certificate = p12Buffer;
+            console.log("Usando base64")
+        } else {
+            throw new Error("O arquivo .p12 não foi encontrado e a variável de ambiente P12_FILE não está definida.");
+        }
+    }
+
+    return certificate;
+};
 
 const agent = new https.Agent({
-    pfx: certificate,
+    pfx: loadCertificate(),
     passphrase: ''
 });
 
