@@ -28,6 +28,7 @@ const config = {
     certificateFile: process.env.PIX_CERTIFICATE_FILE || 'homologacao.p12.sample',
     certificateBase64: process.env.PIX_CERTIFICATE_BASE64 || '',
     pixKey: process.env.PIX_KEY || '1234abcd-5678-efgh-ijkl-9876mnopqrst',
+    webHookUserId: process.env.HEBHOOK_USER_ID || 'f1cd0ab3-4f34-4a53-8b2c-594dd917d6ca',
   },
 };
 
