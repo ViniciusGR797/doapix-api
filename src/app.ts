@@ -30,14 +30,14 @@ app.use('/transactions', transactionRoutes);
 // const CSS_URL2 = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.6.2/swagger-ui.css";
 
 
-// const customCss = fs.readFileSync(path.join(__dirname, '.././node_modules/swagger-ui-dist/swagger-ui.css'), 'utf8');
+const customCss = fs.readFileSync(path.join(__dirname, '.././node_modules/swagger-ui-dist/swagger-ui.css'), 'utf8');
 
-// const swaggerOptions = {
-//     customCss
-//   };
+const swaggerOptions = {
+    customCss
+  };
 
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerOptions));
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerOptions));
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customCssUrl: CSS_URL2 }));
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson));
 
