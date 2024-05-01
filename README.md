@@ -24,6 +24,8 @@
 
 ## Tópicos 
 
+:small_blue_diamond: [🔗 URLs de acesso](#-urls-de-acesso)
+
 :small_blue_diamond: [🏡 Execução localmente](#-execução-localmente)
 
 :small_blue_diamond: [🐳 Execução com Docker](#-execução-com-docker)
@@ -41,6 +43,17 @@
 :small_blue_diamond: [🙌 Reconhecimento](#-reconhecimento)
 
 :small_blue_diamond: [📄 Licença](#-licença)
+
+## 🔗 URLs de acesso
+
+Para acessar a API DoaPix em ambientes de homologação ou produção:
+
+| Ambiente | URL |
+|---|---|
+| `Produção` | https://doapix-api.vercel.app |
+| `Homologação` | https://doapix-api.vercel.app |
+
+Para informações detalhadas sobre a utilização da API, acesse a [documentação do projeto e o Swagger](#-documentação).
 
 ## 🏡 Execução localmente
 
