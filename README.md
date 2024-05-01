@@ -48,12 +48,16 @@
 
 Para acessar a API DoaPix em ambientes de homologação ou produção:
 
+<div align="center">
+
 | Ambiente | URL |
 |---|---|
 | `Produção` | https://doapix-api.vercel.app |
 | `Homologação` | https://doapix-api.vercel.app |
 
-Para informações detalhadas sobre a utilização da API, acesse a [documentação do projeto e o Swagger](#-documentação).
+</div>
+
+Para informações detalhadas sobre a utilização da API, acesse a [Documentação do Projeto e o Swagger](#-documentação).
 
 ## 🏡 Execução localmente
 
