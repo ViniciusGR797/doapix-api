@@ -56,4 +56,9 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 const swaggerJsonPath = path.join(__dirname, 'swagger.json');
 const swaggerSpecJson = fs.existsSync(swaggerJsonPath) ? JSON.parse(fs.readFileSync(swaggerJsonPath, 'utf8')) : null;
 
-export { swaggerSpec, swaggerSpecJson };
+const customCss = fs.readFileSync(path.join(__dirname, '.././node_modules/swagger-ui-dist/swagger-ui.css'), 'utf8');
+const swaggerStyle = {
+    customCss
+};
+
+export { swaggerSpec, swaggerSpecJson, swaggerStyle };

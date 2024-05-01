@@ -2,7 +2,7 @@ import express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec, swaggerSpecJson } from './swagger/swaggerConfig';  
+import { swaggerSpec, swaggerSpecJson, swaggerStyle } from './swagger/swaggerConfig';  
 
 import userRoutes from './routes/userRoute';
 import donationRoutes from './routes/donationRoute';
@@ -26,19 +26,7 @@ app.use('/donations', donationRoutes);
 app.use('/transactions', transactionRoutes);
 
 // Configurações do Swagger
-// const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.css";
-// const CSS_URL2 = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.6.2/swagger-ui.css";
-
-
-const customCss = fs.readFileSync(path.join(__dirname, '.././node_modules/swagger-ui-dist/swagger-ui.css'), 'utf8');
-
-const swaggerOptions = {
-    customCss
-  };
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerOptions));
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-// app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customCssUrl: CSS_URL2 }));
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerStyle));
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson, swaggerStyle));
 
 export default app;
