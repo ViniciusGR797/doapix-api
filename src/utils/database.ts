@@ -11,7 +11,7 @@ export async function connectDB() {
       connectionString: uri,
     });
 
-    console.log("Connected to PostgreSQL!");
+    console.log("Connected to PostgreSQL");
   } catch (error) {
     console.error("Error connecting to PostgreSQL:", error);
   }
