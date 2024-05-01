@@ -53,7 +53,7 @@ Para acessar a API DoaPix em ambientes de homologação ou produção:
 | Ambiente | URL |
 |---|---|
 | `Produção` | https://doapix-api.vercel.app |
-| `Homologação` | https://doapix-hom-api.vercel.app/ |
+| `Homologação` | https://doapix-hom-api.vercel.app |
 
 </div>
 

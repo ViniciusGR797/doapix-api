@@ -9,6 +9,11 @@ declare module 'net' {
 
 export class WebHookController {
     static async webHookConfiguration(req: Request, res: Response): Promise<Response> {
+        const userId = req.headers['user-id'];
+        if (userId == null || userId != config.pix.webHookUserId) {
+            return res.status(401).json({ msg: "Unauthorized user" });
+        }
+
         if (req.socket.authorized) {
             return res.status(200).json({ msg: "Successfully configured webhook" });
         } else {
@@ -18,7 +23,6 @@ export class WebHookController {
 
     static async pixPayConfirm(req: Request, res: Response): Promise<Response> {
         const userId = req.headers['user-id'];
-
         if (userId == null || userId != config.pix.webHookUserId) {
             return res.status(401).json({ msg: "Unauthorized user" });
         }
