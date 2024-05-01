@@ -1,4 +1,6 @@
 import express from 'express';
+import * as path from 'path';
+import * as fs from 'fs';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec, swaggerSpecJson } from './swagger/swaggerConfig';  
 
@@ -27,7 +29,14 @@ app.use('/transactions', transactionRoutes);
 const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.css";
 const CSS_URL2 = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.6.2/swagger-ui.css";
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customCssUrl: CSS_URL }));
+
+const customCss = fs.readFileSync(path.join(__dirname, '.././node_modules/swagger-ui-dist/swagger-ui.css'), 'utf8');
+
+const swaggerOptions = {
+    customCss
+  };
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerOptions));
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customCssUrl: CSS_URL2 }));
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson));
 
