@@ -135,3 +135,4 @@ dist
 # certificate
 *.p12
 *.pem
+*.crt
