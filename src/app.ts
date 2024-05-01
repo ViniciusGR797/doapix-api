@@ -24,7 +24,7 @@ app.use('/donations', donationRoutes);
 app.use('/transactions', transactionRoutes);
 
 // Configurações do Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson));
 
 export default app;
