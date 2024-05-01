@@ -9,7 +9,7 @@ const loadCertificate = () => {
     let certificate;
 
     if (fs.existsSync(certificatePath)) {
-        console.log("Usando arquivo")
+        console.log("Certificate .p12 file is now being utilized")
         certificate = fs.readFileSync(certificatePath);
     } else {
         const p12FileBase64 = config.pix.certificateBase64;
@@ -17,9 +17,9 @@ const loadCertificate = () => {
         if (p12FileBase64) {
             const p12Buffer = Buffer.from(p12FileBase64, 'base64');
             certificate = p12Buffer;
-            console.log("Usando base64")
+            console.log("Certificate base64-encoded is now being utilized")
         } else {
-            throw new Error("O arquivo .p12 não foi encontrado e a variável de ambiente P12_FILE não está definida.");
+            throw new Error("The .p12 file was not found and the P12_FILE environment variable is not set");
         }
     }
 

@@ -120,7 +120,7 @@ Essas são as principais tecnologias utilizadas para construir esta API RESTful.
 A documentação do projeto e da API está disponível nos seguintes links:
 
 - [Documentação do Projeto](https://cdn.discordapp.com/attachments/1089358473483006105/1234334535622066217/Documento_de_Projeto_-_DoaPix.pdf?ex=66305b1e&is=662f099e&hm=96b1a756b05e138532f64d283bb6ab5b6247fd448ae25ae8e7b5791995cc5448&): Este documento fornece uma visão geral do projeto DoaPix, incluindo sua finalidade, escopo e funcionalidades.
-- [Documentação do Swagger Json](https://github.com/ViniciusGR797/doapix-api/blob/master/src/swagger/swagger.json) e [Yaml](https://github.com/ViniciusGR797/doapix-api/blob/master/src/swagger/swagger.yaml): A documentação do Swagger descreve os endpoints e os modelos da API de forma detalhada.
+- [Documentação do Swagger Online](https://doapix-api.vercel.app/), [Documentação do Swagger Json](https://github.com/ViniciusGR797/doapix-api/blob/master/src/swagger/swagger.json) e [Yaml](https://github.com/ViniciusGR797/doapix-api/blob/master/src/swagger/swagger.yaml): A documentação do Swagger descreve os endpoints e os modelos da API de forma detalhada.
 
 Após executar a aplicação, você pode acessar o Swagger UI pela rota `/api-docs` e `/docs`, onde encontrará uma interface interativa para explorar e testar a API.
 
