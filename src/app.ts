@@ -24,7 +24,9 @@ app.use('/donations', donationRoutes);
 app.use('/transactions', transactionRoutes);
 
 // Configurações do Swagger
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customCssUrl: CSS_URL }));
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson));
 
 export default app;
