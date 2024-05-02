@@ -2,6 +2,20 @@
  * @swagger
  * components:
  *   schemas:
+ *     PixPayConfirmWebhook:
+ *       type: object
+ *       properties:
+ *         msg:
+ *           type: string
+ *           description: Mensagem de sucesso ao confirmar pagamento Pix recebida
+ *           example: "Confirmação de pagamento Pix recebida com sucesso"
+ *     ConfigurationSuccessWebhook:
+ *       type: object
+ *       properties:
+ *         msg:
+ *           type: string
+ *           description: Mensagem de sucesso ao ter validado configuração de segurança do Webhook
+ *           example: "Webhook configurado com sucesso"
  *     DeleteSuccess:
  *       type: object
  *       properties:
@@ -52,6 +66,13 @@
  *           type: string
  *           description: Não autorizado. O token JWT não foi fornecido ou é inválido
  *           example: "O token JWT não foi fornecido ou é inválido"
+ *     UnauthorizedCertificateWebhook:
+ *       type: object
+ *       properties:
+ *         msg:
+ *           type: string
+ *           description: Não autorizado. A requisição está sem certificado
+ *           example: "Requisição sem certificado"
  *     Forbidden:
  *       type: object
  *       properties:

@@ -301,6 +301,22 @@ components:
           type: string
           description: Data limite da campanha de doação, sendo fechada após esse período
           example: '2024-04-24T19:34:02.090Z'
+    PixPayConfirmWebhook:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Mensagem de sucesso ao confirmar pagamento Pix recebida
+          example: Confirmação de pagamento Pix recebida com sucesso
+    ConfigurationSuccessWebhook:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: >-
+            Mensagem de sucesso ao ter validado configuração de segurança do
+            Webhook
+          example: Webhook configurado com sucesso
     DeleteSuccess:
       type: object
       properties:
@@ -353,6 +369,13 @@ components:
           type: string
           description: Não autorizado. O token JWT não foi fornecido ou é inválido
           example: O token JWT não foi fornecido ou é inválido
+    UnauthorizedCertificateWebhook:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Não autorizado. A requisição está sem certificado
+          example: Requisição sem certificado
     Forbidden:
       type: object
       properties:
@@ -1249,6 +1272,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+  /webhook:
+    post:
+      summary: Valida configuração de segurança do Webhook
+      description: >-
+        Apenas fornecedor de API Pix que consome esse endpoint, para validar
+        configuração de segurança do Webhook
+      tags:
+        - WebHook
+      operationId: webhook_configuration
+      security:
+        - jwt: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationSuccessWebhook'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedCertificateWebhook'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /webhook/pix:
+    post:
+      summary: Confirmação de pagamento Pix
+      description: >-
+        Apenas fornecedor de API Pix que consome esse endpoint, para enviar
+        confirmação de pagamento Pix
+      tags:
+        - WebHook
+      operationId: pix_pay_confirm
+      security:
+        - jwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PixPayConfirmWebhook'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PixPayConfirmWebhook'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedCertificateWebhook'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
 tags:
   - name: Donation
     description: Rotas para manipulação de campanhas de doação
@@ -1256,3 +1345,5 @@ tags:
     description: Rotas para manipulação de transações solidárias
   - name: User
     description: Rotas para manipulação de usuários
+  - name: WebHook
+    description: Rotas de callback

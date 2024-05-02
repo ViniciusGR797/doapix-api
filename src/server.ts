@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { app } from './app';
+import app from './app';
 import config from './config';
 
 const port = config.port;

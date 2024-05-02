@@ -11,20 +11,20 @@ export class WebHookController {
     static async webHookConfiguration(req: Request, res: Response): Promise<Response> {
         const userId = req.headers['user-id'];
         if (userId == null || userId != config.pix.webHookUserId) {
-            return res.status(401).json({ msg: "Unauthorized user" });
+            return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
         }
 
         if (req.socket.authorized) {
-            return res.status(200).json({ msg: "Successfully configured webhook" });
+            return res.status(200).json({ msg: "Webhook configurado com sucesso" });
         } else {
-            return res.status(401).json({ msg: "Request without certificate" });
+            return res.status(401).json({ msg: "Requisição sem certificado" });
         }
     }
 
     static async pixPayConfirm(req: Request, res: Response): Promise<Response> {
         const userId = req.headers['user-id'];
         if (userId == null || userId != config.pix.webHookUserId) {
-            return res.status(401).json({ msg: "Unauthorized user" });
+            return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
         }
 
         if (req.socket.authorized) {
@@ -40,9 +40,9 @@ export class WebHookController {
 
             // Atualiza status para "Pago" no banco de dados
 
-            return res.status(200).json({ msg: "Successfully configured webhook pix" });
+            return res.status(200).json({ msg: "Confirmação de pagamento Pix recebida com sucesso" });
         } else {
-            return res.status(401).json({ msg: "Request without certificate" });
+            return res.status(401).json({ msg: "Requisição sem certificado" });
         }
     }
 }

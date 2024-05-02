@@ -12,47 +12,75 @@ const router = Router();
 
 /**
  * @swagger
- * /users:
+ * /webhook:
  *   post:
- *     summary: Cria um novo usuário
- *     description: Cria um novo usuário com base nos dados fornecidos no corpo da requisição.
+ *     summary: Valida configuração de segurança do Webhook
+ *     description: Apenas fornecedor de API Pix que consome esse endpoint, para validar configuração de segurança do Webhook
  *     tags:
- *       - User
- *     operationId: create_user
+ *       - WebHook
+ *     operationId: webhook_configuration
+ *     security:
+ *       - jwt: []
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/ConfigurationSuccessWebhook"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UnauthorizedCertificateWebhook"
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Forbidden"
+ */
+
+router.post('/', WebHookController.webHookConfiguration);
+
+/**
+ * @swagger
+ * /webhook/pix:
+ *   post:
+ *     summary: Confirmação de pagamento Pix
+ *     description: Apenas fornecedor de API Pix que consome esse endpoint, para enviar confirmação de pagamento Pix
+ *     tags:
+ *       - WebHook
+ *     operationId: pix_pay_confirm
+ *     security:
+ *       - jwt: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: "#/components/schemas/UserInsert"
+ *             $ref: "#/components/schemas/PixPayConfirmWebhook"
  *     responses:
- *       201:
+ *       200:
  *         description: Success
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/User"
- *       400:
- *         description: BadRequest
+ *               $ref: "#/components/schemas/PixPayConfirmWebhook"
+ *       401:
+ *         description: Unauthorized
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/BadRequest"
- *       404:
- *         description: NotFound
+ *               $ref: "#/components/schemas/UnauthorizedCertificateWebhook"
+ *       403:
+ *         description: Forbidden
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/NotFound"
- *       500:
- *         description: InternalServerError
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/InternalServerError"
+ *               $ref: "#/components/schemas/Forbidden"
  */
-
-router.post('/', WebHookController.webHookConfiguration);
 
 router.post('/pix', WebHookController.pixPayConfirm);
 
