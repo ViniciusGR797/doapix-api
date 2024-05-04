@@ -23,7 +23,7 @@ export class DonationService {
       }
       return { donation: null, error: null };
     } catch (error) {
-      console.error('Erro ao buscar donation por ID:', error);
+      console.error('Erro ao buscar donation por ID: ', error);
       return { donation: null, error: 'Erro interno do servidor' };
     }
   }
@@ -32,14 +32,17 @@ export class DonationService {
     try {
       const { name, description, goal, url_image, deadline, state, category } = data;
 
-      const result = await query('INSERT INTO donations (name, description, goal, url_image, deadline, state, category, user_id, amount_raised) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', [name, description, goal, url_image, deadline, state, category, user_id, "0"]);
+      const result = await query(
+        'INSERT INTO donations (name, description, goal, url_image, deadline, state, category, user_id, amount_raised) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
+        [name, description, goal, url_image, deadline, state, category, user_id, "0"]
+      );
       if (result && result.rows && result.rows.length > 0 && result.rows[0].id) {
         return { createdDonationId: result.rows[0].id, error: null };
       }
 
       return { createdDonationId: null, error: null };
     } catch (error) {
-      console.error('Erro ao criar usuário:', error);
+      console.error('Erro ao criar usuário: ', error);
       return { createdDonationId: '', error: 'Erro interno do servidor' };
     }
   }
@@ -48,8 +51,10 @@ export class DonationService {
     try {
       const { newName, newGoal, newUrlImage, newDeadline, newState, newCategory, newDescription } = updatedDonationData;
 
-      const result = await query('UPDATE donations SET name = $1, goal = $2, url_image = $3, deadline = $4, state = $5, category = $6, description = $7 WHERE id = $8 RETURNING *', [newName, newGoal, newUrlImage, newDeadline, newState, newCategory, newDescription, donation_id]);
-
+      const result = await query(
+        'UPDATE donations SET name = $1, goal = $2, url_image = $3, deadline = $4, state = $5, category = $6, description = $7 WHERE id = $8 RETURNING *',
+        [newName, newGoal, newUrlImage, newDeadline, newState, newCategory, newDescription, donation_id]
+      );
       if (result && result.rows && result.rows.length > 0) {
         const updatedDonation = result.rows[0];
         return { updatedDonation, error: null };
@@ -57,7 +62,7 @@ export class DonationService {
 
       return { updatedDonation: null, error: null };
     } catch (error) {
-      console.error('Erro ao atualizar doação:', error);
+      console.error('Erro ao atualizar doação: ', error);
       return { updatedDonation: null, error: 'Erro interno do servidor' };
     }
   }
@@ -72,7 +77,7 @@ export class DonationService {
       }
       return { deletedDonation: null, error: null };
     } catch (error) {
-      console.error('Erro ao deletar doação:', error);
+      console.error('Erro ao deletar doação: ', error);
       return { deletedDonation: null, error: 'Erro interno do servidor' };
     }
   }

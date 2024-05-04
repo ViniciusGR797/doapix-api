@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255),
-    email VARCHAR(255) UNIQUE, 
+    email VARCHAR(255) UNIQUE,
     pwd VARCHAR(255),
     code_recover_pwd VARCHAR(6),
     pix_key VARCHAR(255),
@@ -41,4 +41,11 @@ CREATE TABLE transactions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     donation_id UUID,
     FOREIGN KEY (donation_id) REFERENCES donations(id)
+);
+
+CREATE TABLE websocket_connections (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    txid VARCHAR(255),
+    socket_id VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

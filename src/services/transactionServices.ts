@@ -9,7 +9,7 @@ export class TransactionService {
             const transactions = result.rows;
             return { transactions, error: null };
         } catch (error) {
-            console.error('Erro ao buscar transações por donation_id:', error);
+            console.error('Erro ao buscar transações por donation_id: ', error);
             return { transactions: null, error: 'Erro interno do servidor' };
         }
     }
@@ -24,7 +24,22 @@ export class TransactionService {
 
             return { transaction: null, error: null };
         } catch (error) {
-            console.error('Erro ao buscar transação por ID:', error);
+            console.error('Erro ao buscar transação por ID: ', error);
+            return { transaction: null, error: 'Erro interno do servidor' };
+        }
+    }
+
+    static async getTransactionByTxid(transaction_txid: string): Promise<{ transaction: Transaction | null, error: string | null }> {
+        try {
+            const result = await query('SELECT * FROM transactions WHERE txid = $1', [transaction_txid]);
+            if (result && result.rows && result.rows.length > 0) {
+                const transaction = result.rows[0];
+                return { transaction, error: null };
+            }
+
+            return { transaction: null, error: null };
+        } catch (error) {
+            console.error('Erro ao buscar transação por txid: ', error);
             return { transaction: null, error: 'Erro interno do servidor' };
         }
     }
@@ -37,15 +52,29 @@ export class TransactionService {
                 'INSERT INTO transactions (txid, location, qr_code, pix_copy_paste, amount, alias, email, message, status, donation_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id', 
                 [txid, location, qr_code, pix_copy_paste, amount, alias, email, message, status, donation_id]
             );
-            
             if (result && result.rows && result.rows.length > 0 && result.rows[0].id) {
                 return { createdTransactionID: result.rows[0].id, error: null };
             }
 
             return { createdTransactionID: null, error: null };
         } catch (error) {
-            console.error('Erro ao criar transação:', error);
+            console.error('Erro ao criar transação: ', error);
             return { createdTransactionID: '', error: 'Erro interno do servidor' };
         }
     }
+
+    static async updateTransaction(transaction_id: string, status: string): Promise<{ updatedTransaction: any | null; error: string | null }> {
+        try {
+          const result = await query('UPDATE transactions SET status = $1 WHERE id = $6 RETURNING *', [status, transaction_id]);
+          if (result && result.rows && result.rows.length > 0) {
+            const updatedTransaction = result.rows[0];
+            return { updatedTransaction, error: null };
+          }
+    
+          return { updatedTransaction: null, error: null };
+        } catch (error) {
+          console.error('Erro ao atualizar transação: ', error);
+          return { updatedTransaction: null, error: 'Erro interno do servidor' };
+        }
+      }
 }

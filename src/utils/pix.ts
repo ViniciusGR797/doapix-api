@@ -111,9 +111,9 @@ const sendPix = async (amount: string, donation_name: string, alias: string, pix
     return pixResponse;
 }
 
-const refundPix = async (e2eId: string, id: string) => {
+const refundPix = async (e2eId: string, refund_id: string) => {
     const api = await apiPix;
-    const refundResponse = await api.put(`/v2/pix/${e2eId}/devolucao/${id}`);
+    const refundResponse = await api.put(`/v2/pix/${e2eId}/devolucao/${refund_id}`);
     return refundResponse;
 }
 

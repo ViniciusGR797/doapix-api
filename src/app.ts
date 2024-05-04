@@ -1,12 +1,15 @@
 import express from 'express';
 import cors from 'cors';
+import { Server } from 'http';
+import { Server as SocketServer, Socket } from 'socket.io';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec, swaggerSpecJson, swaggerStyle } from './swagger/swaggerConfig';  
-import { connectDB } from './utils/database'; 
+import { swaggerSpec, swaggerSpecJson, swaggerStyle } from './swagger/swaggerConfig';
+import { connectDB } from './utils/database';
 import userRoutes from './routes/userRoute';
 import donationRoutes from './routes/donationRoute';
 import transactionRoutes from './routes/transactionRoute';
 import webHookRoutes from './routes/webHookRoute';
+import { WebSocketController } from './controllers/webSocketController';
 
 const app = express();
 
@@ -29,4 +32,14 @@ app.use('/webhook', webHookRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerStyle));
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson, swaggerStyle));
 
-export default app;
+// WebSocket
+const server = new Server(app);
+const io = new SocketServer(server);
+
+io.on('connection', (socket: Socket) => {
+    socket.on('txid', (txid: string) => {
+        WebSocketController.createWebsocketConnection(txid, socket.id);
+    });
+});
+
+export { io, server };
