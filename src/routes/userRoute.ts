@@ -29,6 +29,12 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/User"
+ *       400:
+ *         description: BadRequest
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/BadRequest"
  *       401:
  *         description: Unauthorized
  *         content:
@@ -221,6 +227,12 @@ router.put('/', authMiddleware, UserController.updateUserMe);
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/DeleteSuccess"
+ *       400:
+ *         description: BadRequest
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/BadRequest"
  *       401:
  *         description: Unauthorized
  *         content:

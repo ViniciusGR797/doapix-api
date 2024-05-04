@@ -40,6 +40,10 @@ export class WebHookController {
 
             // Atualiza status para "Pago" no banco de dados
 
+            // Envia pix
+
+            // Verifica sucesso, em caso de falgha faz reembolso
+
             return res.status(200).json({ msg: "Confirmação de pagamento Pix recebida com sucesso" });
         } else {
             return res.status(401).json({ msg: "Requisição sem certificado" });

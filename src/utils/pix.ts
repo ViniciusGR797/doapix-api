@@ -5,9 +5,9 @@ import https from 'https';
 import config from '../config';
 
 const loadCertificate = () => {
-    const certificatePath = path.resolve(__dirname, `../../certificates/${config.pix.certificateFile}`);
     let certificate;
 
+    const certificatePath = path.resolve(__dirname, `../../certificates/${config.pix.certificateFile}`);
     if (fs.existsSync(certificatePath)) {
         console.log("Certificate .p12 file is now being utilized")
         certificate = fs.readFileSync(certificatePath);
@@ -22,7 +22,6 @@ const loadCertificate = () => {
             throw new Error("The .p12 file was not found and the P12_FILE environment variable is not set");
         }
     }
-
     return certificate;
 };
 
@@ -66,7 +65,7 @@ const setupApiPixClient = async () => {
 
 const apiPix = setupApiPixClient();
 
-const cobGenerator = async (amount: string, donation_name: string,) => {
+const cobGenerator = async (amount: string, donation_name: string) => {
     const api = await apiPix;
     const dataCob = {
         calendario: {
@@ -83,10 +82,39 @@ const cobGenerator = async (amount: string, donation_name: string,) => {
     return cobResponse;
 }
 
+const linkSplitInCob = async (txid: string, split_config_id: string) => {
+    const api = await apiPix;
+    const linkSplitResponse = await api.put(`/v2/gn/split/cob/${txid}/vinculo/${split_config_id}`);
+    return linkSplitResponse;
+}
+
 const qrCodeGenerator = async (loc_id: number) => {
     const api = await apiPix;
     const qrcodeResponse = await api.get(`/v2/loc/${loc_id}/qrcode`);
     return qrcodeResponse;
 }
 
-export { apiPix, cobGenerator, qrCodeGenerator };
+const sendPix = async (amount: string, donation_name: string, alias: string, pix_key: string, id_envio: string) => {
+    const api = await apiPix;
+    const dataPix = {
+        valor: amount,
+        pagador: {
+            chave: config.pix.pixKey,
+            infoPagador: `Sua campanha ${donation_name} acaba de receber uma doação vinda de ${alias} através do PIX`
+        },
+        favorecido: {
+            chave: pix_key
+        }
+    };
+
+    const pixResponse = await api.put(`/v2/gn/pix/${id_envio}`, dataPix);
+    return pixResponse;
+}
+
+const refundPix = async (e2eId: string, id: string) => {
+    const api = await apiPix;
+    const refundResponse = await api.put(`/v2/pix/${e2eId}/devolucao/${id}`);
+    return refundResponse;
+}
+
+export { apiPix, cobGenerator, linkSplitInCob, qrCodeGenerator, sendPix, refundPix };

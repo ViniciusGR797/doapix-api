@@ -1,16 +1,13 @@
 import { Request, Response } from 'express';
 import { DonationService } from '../services/donationServices';
 import { TransactionService } from '../services/transactionServices';
-import { Password } from '../securities/password';
-import { Token } from '../securities/token';
-import { Donation, DonationInsert, DonationUpdate } from '../models/donationModel';
+import { DonationInsert, DonationUpdate } from '../models/donationModel';
 import { validate } from 'class-validator';
 import { validarUUID } from '../utils/validate';
 
 export class DonationController {
   static async getDonation(req: Request, res: Response): Promise<Response> {
     const { donations, error: getDonationsError } = await DonationService.getDonations();
-
     if (getDonationsError) {
       return res.status(500).json({ msg: getDonationsError });
     }
@@ -20,13 +17,11 @@ export class DonationController {
 
   static async getDonationById(req: Request, res: Response): Promise<Response> {
     const donationId = req.params.donation_id;
-
     if (!validarUUID(donationId)) {
       return res.status(400).json({ msg: 'ID da donation inválido' });
     }
 
     const { donation, error: getDonationError } = await DonationService.getDonationById(donationId);
-
     if (getDonationError) {
       return res.status(500).json({ msg: getDonationError });
     }
@@ -35,7 +30,6 @@ export class DonationController {
     }
 
     const { transactions, error: getTransactionError } = await TransactionService.getTransactionByDonation(donationId, "Pago");
-
     if (getTransactionError) {
       return res.status(500).json({ msg: getTransactionError });
     }
@@ -64,25 +58,27 @@ export class DonationController {
 
   static async createDonation(req: Request, res: Response): Promise<Response> {
     const payload = new DonationInsert(req.body);
-    const user_id = req.user_id;
+    const userId = req.user_id;
+    if (!validarUUID(userId)) {
+      return res.status(400).json({ msg: 'ID do usuário inválido' });
+    }
 
     const errors = await validate(payload);
-
     if (errors.length > 0) {
       const firstError = errors[0];
       const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : "Parâmetros inválidos e/ou incompletos";
       return res.status(400).json({ msg: errorMessage });
     }
 
-    const { createdDonationID, error: createDonationError } = await DonationService.createDonation(payload, user_id);
+    const { createdDonationId, error: createDonationError } = await DonationService.createDonation(payload, userId);
     if (createDonationError) {
       return res.status(500).json({ msg: createDonationError });
     }
-    if (!createdDonationID || createdDonationID === "") {
+    if (!createdDonationId || createdDonationId === "") {
       return res.status(404).json({ msg: 'Nenhum dado encontrado' });
     }
 
-    const { donation, error: getDonationError } = await DonationService.getDonationById(createdDonationID);
+    const { donation, error: getDonationError } = await DonationService.getDonationById(createdDonationId);
     if (getDonationError) {
       return res.status(500).json({ msg: getDonationError });
     }
@@ -94,9 +90,12 @@ export class DonationController {
   }
 
   static async updateDonation(req: Request, res: Response): Promise<Response> {
-    const user_id = req.user_id;
-    const donationId = req.params.donation_id;
+    const userId = req.user_id;
+    if (!validarUUID(userId)) {
+      return res.status(400).json({ msg: 'ID do usuário inválido' });
+    }
 
+    const donationId = req.params.donation_id;
     if (!validarUUID(donationId)) {
       return res.status(400).json({ msg: 'ID da donation inválido' });
     }
@@ -109,14 +108,13 @@ export class DonationController {
       return res.status(404).json({ msg: 'Nenhum dado encontrado' });
     }
 
-    if(user_id !== donation.user_id){
+    if(userId !== donation.user_id){
       return res.status(400).json({ msg: 'Apenas o usuário que criou essa campanha pode editar' });
     }
 
     const payload = new DonationUpdate(req.body);
 
     const errors = await validate(payload);
-
     if (errors.length > 0) {
       const firstError = errors[0];
       const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros inválidos e/ou vazios';
@@ -141,9 +139,12 @@ export class DonationController {
   }
 
   static async deleteDonation(req: Request, res: Response): Promise<Response> {
-    const user_id = req.user_id;
-    const donationId = req.params.donation_id;
+    const userId = req.user_id;
+    if (!validarUUID(userId)) {
+      return res.status(400).json({ msg: 'ID do usuário inválido' });
+    }
 
+    const donationId = req.params.donation_id;
     if (!validarUUID(donationId)) {
       return res.status(400).json({ msg: 'ID da donation inválido' });
     }
@@ -156,7 +157,7 @@ export class DonationController {
       return res.status(404).json({ msg: 'Nenhum dado encontrado' });
     }
 
-    if(user_id !== donation.user_id){
+    if(userId !== donation.user_id){
       return res.status(400).json({ msg: 'Apenas o usuário que criou essa campanha pode excluir' });
     }
 

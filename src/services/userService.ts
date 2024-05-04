@@ -66,7 +66,6 @@ export class UserService {
     }
   }
 
-  // Função para remover um usuário
   static async deleteUser(user_id: string): Promise<{ deletedUser: any | null; error: string | null }> {
     try {
       const result = await query('DELETE FROM users WHERE id = $1', [user_id]);

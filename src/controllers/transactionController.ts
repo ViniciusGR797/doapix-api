@@ -3,12 +3,23 @@ import { TransactionService } from '../services/transactionServices';
 import { Transaction, TransactionInsert } from '../models/transactionModel';
 import { validate } from 'class-validator';
 import { validarUUID } from '../utils/validate';
-import { cobGenerator, qrCodeGenerator } from '../utils/pix';
+import { cobGenerator, linkSplitInCob, qrCodeGenerator } from '../utils/pix';
 import { DonationService } from '../services/donationServices';
+import config from '../config';
 
 export class TransactionController {
   static async getTransactionByDonation(req: Request, res: Response): Promise<Response> {
-    return res.status(200).json("transaction");
+    const donationId = req.params.donation_id;
+    if (!validarUUID(donationId)) {
+      return res.status(400).json({ msg: 'ID da donation inválido' });
+    }
+
+    const { transactions, error: getTransactionByDonationError } = await TransactionService.getTransactionByDonation(donationId, "Pago");
+    if (getTransactionByDonationError) {
+      return res.status(500).json({ msg: getTransactionByDonationError });
+    }
+
+    return res.status(200).json(transactions);
   }
 
   static async getTransactionById(req: Request, res: Response): Promise<Response> {
@@ -57,7 +68,16 @@ export class TransactionController {
       return res.status(400).json({ msg: `Erro: ${cob.data.error_description}` });
     } else if (cob.status !== 201) {
       return res.status(400).json({ msg: `Erro: ${cob.data.mensagem}` });
-    } 
+    }
+
+    const linkSplit = await linkSplitInCob(cob.data.txid, config.pix.splitConfigId)
+    if (!linkSplit) {
+      return res.status(500).json({ msg: 'Erro ao vincular spli de pagamento em cobrança' });
+    } else if (linkSplit.status === 401) {
+      return res.status(400).json({ msg: `Erro: ${linkSplit.data.error_description}` });
+    } else if (linkSplit.status !== 204) {
+      return res.status(400).json({ msg: `Erro: ${linkSplit.data.violacoes[0].razao}` });
+    }
 
     const qrCode = await qrCodeGenerator(cob.data.loc.id)
     if (!qrCode) {
@@ -66,7 +86,7 @@ export class TransactionController {
       return res.status(400).json({ msg: `Erro: ${cob.data.error_description}` });
     } else if (qrCode.status !== 200) {
       return res.status(400).json({ msg: `Erro: ${cob.data.mensagem}` });
-    } 
+    }
 
     const data = new Transaction({
       "id": "",

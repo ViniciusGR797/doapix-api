@@ -2,6 +2,18 @@ import { Transaction } from "../models/transactionModel";
 import { query } from "../utils/database";
 
 export class TransactionService {
+    static async getTransactionByDonation(donation_id: string, status: string): Promise<{ transactions: Transaction[] | null, error: string | null }> {
+        try {
+            const result = await query('SELECT * FROM transactions WHERE donation_id = $1 AND status = $2', [donation_id, status]);
+
+            const transactions = result.rows;
+            return { transactions, error: null };
+        } catch (error) {
+            console.error('Erro ao buscar transações por donation_id:', error);
+            return { transactions: null, error: 'Erro interno do servidor' };
+        }
+    }
+    
     static async getTransactionById(transaction_id: string): Promise<{ transaction: Transaction | null, error: string | null }> {
         try {
             const result = await query('SELECT * FROM transactions WHERE id = $1', [transaction_id]);
@@ -34,18 +46,6 @@ export class TransactionService {
         } catch (error) {
             console.error('Erro ao criar transação:', error);
             return { createdTransactionID: '', error: 'Erro interno do servidor' };
-        }
-    }
-
-    static async getTransactionByDonation(donation_id: string, status: string): Promise<{ transactions: Transaction[] | null, error: string | null }> {
-        try {
-            const result = await query('SELECT * FROM transactions WHERE donation_id = $1 AND status = $2', [donation_id, status]);
-
-            const transactions = result.rows;
-            return { transactions, error: null };
-        } catch (error) {
-            console.error('Erro ao buscar transações por donation_id:', error);
-            return { transactions: null, error: 'Erro interno do servidor' };
         }
     }
 }
