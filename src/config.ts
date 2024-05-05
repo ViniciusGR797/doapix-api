@@ -29,6 +29,9 @@ const config = {
     webHookUserId: process.env.HEBHOOK_USER_ID || '01234567-89ab-cdef-0123-456789abcdef',
     splitConfigId: process.env.SPLIT_CONFIG_ID || '0123456789abcdef0123456789abcdef',
   },
+  cors: {
+    ui_url: process.env.PIX_URL || 'https://doapix-ui.com',
+  },
 };
 
 export default config;
