@@ -42,3 +42,10 @@ CREATE TABLE transactions (
     donation_id UUID,
     FOREIGN KEY (donation_id) REFERENCES donations(id)
 );
+
+CREATE TABLE logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    level VARCHAR(255),
+    message VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

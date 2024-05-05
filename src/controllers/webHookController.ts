@@ -6,6 +6,7 @@ import { DonationService } from '../services/donationServices';
 import { UserService } from '../services/userService';
 import { generatePixShippingId, generateRefundId } from '../securities/generateId';
 import pusher from '../utils/pusher';
+import { query } from "../utils/database"
 
 declare module 'net' {
     interface Socket {
@@ -31,16 +32,23 @@ export class WebHookController {
 
     static async pixPayConfirm(req: Request, res: Response): Promise<Response> {
         try {
-            const userId = req.headers['user-id'];
+            // const userId = req.headers['user-id'];
 
-            const hasPermission = WebHookController.verifyUserPermission(userId);
-            if (!hasPermission) {
-                return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
-            }
+            // const hasPermission = WebHookController.verifyUserPermission(userId);
+            // if (!hasPermission) {
+            //     return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
+            // }
 
-            if (!req.socket.authorized) {
-                return res.status(401).json({ msg: "Requisição sem certificado" });
-            }
+            // if (!req.socket.authorized) {
+            //     return res.status(401).json({ msg: "Requisição sem certificado" });
+            // }
+
+            const result = await query(
+                'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
+                ["DEBUG", req.body]
+            );
+
+            console.log(req.body);
 
             const { txid, e2eId, amount, transaction, donation, user } = await WebHookController.processPaymentConfirmation(req.body);
 
