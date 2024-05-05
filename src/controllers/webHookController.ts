@@ -27,6 +27,18 @@ export class WebHookController {
             return res.status(401).json({ msg: "Requisição sem certificado" });
         }
 
+        const result = await query(
+            'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
+            ["DEBUG-CONFIG", "CHAMOU CONFIG"]
+        );
+
+        const result2 = await query(
+            'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
+            ["DEBUG-CONFIG", req.body]
+        );
+
+        console.log(req.body);
+
         return res.status(200).json({ msg: "Webhook configurado com sucesso" });
     }
 
@@ -45,7 +57,12 @@ export class WebHookController {
 
             const result = await query(
                 'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
-                ["DEBUG", req.body]
+                ["DEBUG-PIX", "CHAMOU PIX"]
+            );
+
+            const result2 = await query(
+                'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
+                ["DEBUG-PIX", req.body]
             );
 
             console.log(req.body);
