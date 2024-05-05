@@ -94,7 +94,7 @@ export class WebHookController {
     }
 
     static async notifyPayment(txid: string): Promise<void> {
-        pusher.trigger('notify-payment', 'payment', {
+        pusher.trigger('payment-notification-channel', 'payment', {
             message: 'Pagamento realizado com sucesso',
             txid: txid
         });
