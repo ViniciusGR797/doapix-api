@@ -68,18 +68,18 @@ router.post('/', WebHookController.webHookConfiguration);
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/PixPayConfirmWebhook"
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/UnauthorizedCertificateWebhook"
  *       403:
  *         description: Forbidden
  *         content:
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/Forbidden"
+ *       500:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/InternalServerError"
  */
 
 router.post('/pix', WebHookController.pixPayConfirm);
