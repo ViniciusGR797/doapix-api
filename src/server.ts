@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import { server } from './app';
+import app from './app';
 import config from './config';
 
 const port = config.port;
 
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

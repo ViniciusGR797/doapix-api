@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import config from '../config';
-import { WebsocketService } from '../services/websocketServices';
 import { TransactionService } from '../services/transactionServices';
-import { io } from '../app';
 import { refundPix, sendPix } from '../utils/pix';
 import { DonationService } from '../services/donationServices';
 import { UserService } from '../services/userService';
 import { generatePixShippingId, generateRefundId } from '../securities/generateId';
+import pusher from '../utils/pusher';
 
 declare module 'net' {
     interface Socket {
@@ -59,7 +58,7 @@ export class WebHookController {
     }
 
     static verifyUserPermission(userId: any): boolean {
-        return userId !== null && userId !== undefined && userId === config.pix.webHookUserId;
+        return userId !== null && userId !== undefined && userId === config.webHookUserId;
     }
 
     static async processPaymentConfirmation(payload: any): Promise<{ txid: string; e2eId: string; amount: string; transaction: any; donation: any; user: any }> {
@@ -95,27 +94,10 @@ export class WebHookController {
     }
 
     static async notifyPayment(txid: string): Promise<void> {
-        const { websocketConnections, error: getwebsocketConnectionError } = await WebsocketService.getWebsocketConnectionsByTxid(txid);
-        if (getwebsocketConnectionError) {
-            throw new Error(getwebsocketConnectionError);
-        }
-        if (!websocketConnections) {
-            throw new Error('Nenhuma conexão websocket encontrado');
-        }
-
-        websocketConnections.forEach(({ socket_id }) => {
-            const clientSocket = io.sockets.sockets.get(socket_id);
-            if (clientSocket) {
-                clientSocket.emit('payment', 'Pagamento realizado com sucesso');
-            }
+        pusher.trigger('notify-payment', 'payment', {
+            message: 'Pagamento realizado com sucesso',
+            txid: txid
         });
-
-        await WebsocketService.deleteWebsocketConnectionsByTxid(txid);
-
-        const { deletedWebsocketConnections, error: deletedWebsocketConnectionError } = await WebsocketService.deleteWebsocketConnectionsByTxid(txid);
-        if (deletedWebsocketConnectionError) {
-            throw new Error(deletedWebsocketConnectionError);
-        }
     }
 
     static async updateTransactionStatus(transactionId: string): Promise<void> {
