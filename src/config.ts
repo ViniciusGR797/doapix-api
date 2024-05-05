@@ -1,9 +1,7 @@
 import dotenv from 'dotenv';
 
-// Carrega as variáveis de ambiente do arquivo .env
 dotenv.config();
 
-// Defina as configurações que você deseja usar
 const config = {
   port: parseInt(process.env.PORT || '8080', 10),
   bdUri: process.env.DB_URI || 'postgresql://username:password@hostname/database?sslmode=require',
@@ -28,7 +26,8 @@ const config = {
     certificateFile: process.env.PIX_CERTIFICATE_FILE || 'homologacao.p12.sample',
     certificateBase64: process.env.PIX_CERTIFICATE_BASE64 || '',
     pixKey: process.env.PIX_KEY || '1234abcd-5678-efgh-ijkl-9876mnopqrst',
-    webHookUserId: process.env.HEBHOOK_USER_ID || 'f1cd0ab3-4f34-4a53-8b2c-594dd917d6ca',
+    webHookUserId: process.env.HEBHOOK_USER_ID || '01234567-89ab-cdef-0123-456789abcdef',
+    splitConfigId: process.env.SPLIT_CONFIG_ID || '0123456789abcdef0123456789abcdef',
   },
 };
 

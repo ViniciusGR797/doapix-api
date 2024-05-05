@@ -42,12 +42,18 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/BadRequest"
- *       404:
- *         description: NotFound
+ *       401:
+ *         description: Unauthorized
  *         content:
  *           application/json:
  *             schema:
- *               $ref: "#/components/schemas/NotFound"
+ *               $ref: "#/components/schemas/Unauthorized"
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Forbidden"
  *       500:
  *         description: InternalServerError
  *         content:
@@ -103,7 +109,7 @@ router.get('/donation/:donation_id', authMiddleware, TransactionController.getTr
  *               $ref: "#/components/schemas/InternalServerError"
  */
 
-router.get('/:transaction_id', authMiddleware, TransactionController.getTransactionById);
+router.get('/:transaction_id', TransactionController.getTransactionById);
 
 /**
  * @swagger

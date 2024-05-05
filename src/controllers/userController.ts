@@ -5,13 +5,16 @@ import { Token } from '../securities/token';
 import { UserUpdate, UserInsert, User, UserLogin, UserRequestRecover, UserRecoverPwd } from '../models/userModel';
 import { validate } from 'class-validator';
 import { EmailOptions, TemplateEmail, generateRandomCode, generateRandomPassword, sendEmail } from '../utils/email';
+import { validarUUID } from '../utils/validate';
 
 export class UserController {
   static async getUserMe(req: Request, res: Response): Promise<Response> {
-    const user_id = req.user_id;
+    const userId = req.user_id;
+    if (!validarUUID(userId)) {
+      return res.status(400).json({ msg: 'ID do usuário inválido' });
+    }
 
-    const { user, error } = await UserService.getUserById(user_id);
-
+    const { user, error } = await UserService.getUserById(userId);
     if (error) {
       return res.status(500).json({ msg: error });
     }
@@ -24,7 +27,6 @@ export class UserController {
 
   static async createUser(req: Request, res: Response): Promise<Response> {
     const payload = new UserInsert(req.body);
-
     const errors = await validate(payload);
     if (errors.length > 0) {
       const firstError = errors[0];
@@ -37,7 +39,7 @@ export class UserController {
       return res.status(500).json({ msg: getUserEmailError });
     }
     if (existingUser) {
-      return res.status(400).json({ msg: "Este e-mail já está cadastrado" });
+      return res.status(400).json({ msg: "Este email já está cadastrado" });
     }
 
     payload.pwd = await Password.hashPassword(payload.pwd)
@@ -62,50 +64,43 @@ export class UserController {
   }
 
   static async loginUser(req: Request, res: Response): Promise<Response> {
-    try {
-      const payload = new UserLogin(req.body);
-
-      const errors = await validate(payload);
-
-      if (errors.length > 0) {
-        const firstError = errors[0];
-        const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros invalidos e/ou vazios';
-        return res.status(400).json({ msg: errorMessage });
-      }
-
-      const { user, error: getUserError } = await UserService.getUserByEmail(payload.email);
-
-      if (getUserError) {
-        return res.status(500).json({ msg: getUserError });
-      }
-      if (!user) {
-        return res.status(401).json({ msg: 'Credenciais de usuário inválidas' });
-      }
-
-      const isPasswordValid = await Password.comparePassword(payload.pwd, user.pwd);
-
-      if (!isPasswordValid) {
-        return res.status(401).json({ msg: 'Credenciais de usuário inválidas' });
-      }
-
-      const token = Token.generateToken(user.id);
-
-      return res.status(200).json({
-        id: user.id,
-        email: user.email,
-        access_token: token,
-      });
-    } catch (err) {
-      console.error('Erro ao criar usuário:', err);
-      return res.status(500).json({ msg: 'Erro interno do servidor' });
+    const payload = new UserLogin(req.body);
+    const errors = await validate(payload);
+    if (errors.length > 0) {
+      const firstError = errors[0];
+      const errorMessage = firstError.constraints ? Object.values(firstError.constraints)[0] : 'Parâmetros invalidos e/ou vazios';
+      return res.status(400).json({ msg: errorMessage });
     }
+
+    const { user, error: getUserError } = await UserService.getUserByEmail(payload.email);
+    if (getUserError) {
+      return res.status(500).json({ msg: getUserError });
+    }
+    if (!user) {
+      return res.status(401).json({ msg: 'Credenciais de usuário inválidas' });
+    }
+
+    const isPasswordValid = await Password.comparePassword(payload.pwd, user.pwd);
+    if (!isPasswordValid) {
+      return res.status(401).json({ msg: 'Credenciais de usuário inválidas' });
+    }
+
+    const token = Token.generateToken(user.id);
+
+    return res.status(200).json({
+      id: user.id,
+      email: user.email,
+      access_token: token,
+    });
   }
 
   static async updateUserMe(req: Request, res: Response): Promise<Response> {
-    const user_id = req.user_id;
+    const userId = req.user_id;
+    if (!validarUUID(userId)) {
+      return res.status(400).json({ msg: 'ID do usuário inválido' });
+    }
 
-    const { user, error: getUserError } = await UserService.getUserById(user_id);
-
+    const { user, error: getUserError } = await UserService.getUserById(userId);
     if (getUserError) {
       return res.status(500).json({ msg: getUserError });
     }
@@ -140,7 +135,7 @@ export class UserController {
       novaPixKeyType: payload.pix_key_type || user.pix_key_type
     };
 
-    const { updatedUser, error: updateUserError } = await UserService.updateUser(user_id, updatedUserData);
+    const { updatedUser, error: updateUserError } = await UserService.updateUser(userId, updatedUserData);
     if (updateUserError) {
       return res.status(500).json({ msg: updateUserError });
     }
@@ -148,11 +143,12 @@ export class UserController {
   }
 
   static async deleteUserMe(req: Request, res: Response): Promise<Response> {
+    const userId = req.user_id;
+    if (!validarUUID(userId)) {
+      return res.status(400).json({ msg: 'ID do usuário inválido' });
+    }
 
-    const user_id = req.user_id;
-
-    const { user, error: getUserError } = await UserService.getUserById(user_id);
-
+    const { user, error: getUserError } = await UserService.getUserById(userId);
     if (getUserError) {
       return res.status(500).json({ msg: getUserError });
     }
@@ -160,7 +156,7 @@ export class UserController {
       return res.status(404).json({ msg: 'Nenhum dado encontrado' });
     }
 
-    const { deletedUser, error: deletedUserError } = await UserService.deleteUser(user_id);
+    const { deletedUser, error: deletedUserError } = await UserService.deleteUser(userId);
     if (deletedUserError) {
       return res.status(500).json({ msg: deletedUserError });
     }
@@ -169,7 +165,6 @@ export class UserController {
 
   static async requestRecover(req: Request, res: Response): Promise<Response> {
     const payload = new UserRequestRecover(req.body);
-
     const errors = await validate(payload);
     if (errors.length > 0) {
       const firstError = errors[0];
@@ -220,7 +215,7 @@ export class UserController {
       return res.status(404).json({ msg: 'Nenhum dado encontrado' });
     }
 
-    if(user.code_recover_pwd !== payload.code_recover_pwd){
+    if (user.code_recover_pwd !== payload.code_recover_pwd) {
       return res.status(400).json({ msg: 'Código de recuperação inválido' });
     }
 
