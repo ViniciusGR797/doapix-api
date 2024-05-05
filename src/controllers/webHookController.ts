@@ -17,29 +17,31 @@ declare module 'net' {
 export class WebHookController {
     static async webHookConfiguration(req: Request, res: Response): Promise<Response> {
         const userId = req.headers['user-id'];
-        if (userId == null || userId != config.pix.webHookUserId) {
+
+        const hasPermission = WebHookController.verifyUserPermission(userId);
+        if (!hasPermission) {
             return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
         }
 
-        if (req.socket.authorized) {
-            return res.status(200).json({ msg: "Webhook configurado com sucesso" });
-        } else {
+        if (!req.socket.authorized) {
             return res.status(401).json({ msg: "Requisição sem certificado" });
         }
+
+        return res.status(200).json({ msg: "Webhook configurado com sucesso" });
     }
 
     static async pixPayConfirm(req: Request, res: Response): Promise<Response> {
         try {
-            // const userId = req.headers['user-id'];
+            const userId = req.headers['user-id'];
 
-            // const hasPermission = WebHookController.verifyUserPermission(userId);
-            // if (!hasPermission) {
-            //     return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
-            // }
+            const hasPermission = WebHookController.verifyUserPermission(userId);
+            if (!hasPermission) {
+                return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
+            }
 
-            // if (!req.socket.authorized) {
-            //     return res.status(401).json({ msg: "Requisição sem certificado" });
-            // }
+            if (!req.socket.authorized) {
+                return res.status(401).json({ msg: "Requisição sem certificado" });
+            }
 
             const { txid, e2eId, amount, transaction, donation, user } = await WebHookController.processPaymentConfirmation(req.body);
 
@@ -64,7 +66,7 @@ export class WebHookController {
         const txid = payload.pix[0].txid;
         const e2eId = payload.pix[0].endToEndId;
         const amount = (Math.ceil(payload.pix[0].valor * 93.62) / 100).toFixed(2);
-        
+
         const { transaction, error: gettransactionError } = await TransactionService.getTransactionByTxid(txid);
         if (gettransactionError) {
             throw new Error(gettransactionError);
