@@ -26,11 +26,15 @@ const config = {
     certificateFile: process.env.PIX_CERTIFICATE_FILE || 'homologacao.p12.sample',
     certificateBase64: process.env.PIX_CERTIFICATE_BASE64 || '',
     pixKey: process.env.PIX_KEY || '1234abcd-5678-efgh-ijkl-9876mnopqrst',
-    webHookUserId: process.env.HEBHOOK_USER_ID || '01234567-89ab-cdef-0123-456789abcdef',
-    splitConfigId: process.env.SPLIT_CONFIG_ID || '0123456789abcdef0123456789abcdef',
+    splitConfigId: process.env.PIX_SPLIT_CONFIG_ID || '0123456789abcdef0123456789abcdef',
   },
-  cors: {
-    ui_url: process.env.UI_URL || 'https://doapix-ui.com',
+  webHookUserId: process.env.HEBHOOK_USER_ID || '01234567-89ab-cdef-0123-456789abcdef',
+  pusher: {
+    appId: process.env.PUSHER_APP_ID || '1234567',
+    key: process.env.PUSHER_KEY || '1234567890abcdefghij',
+    secret: process.env.PUSHER_SECRET || '01234567890abcdefghi',
+    cluster: process.env.PUSHER_CLUSTER || 'mt1',
+    useTLS: Boolean(process.env.PUSHER_USE_TLS || true),
   },
 };
 

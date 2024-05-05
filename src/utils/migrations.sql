@@ -42,10 +42,3 @@ CREATE TABLE transactions (
     donation_id UUID,
     FOREIGN KEY (donation_id) REFERENCES donations(id)
 );
-
-CREATE TABLE websocket_connections (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    txid VARCHAR(255),
-    socket_id VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
