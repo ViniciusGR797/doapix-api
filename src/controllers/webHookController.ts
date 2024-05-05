@@ -23,6 +23,9 @@ export class WebHookController {
             ["DEBUG-CONFIG", "CHAMOU CONFIG"]
         );
 
+        console.log("DEBUG-CONFIG");
+        console.log(req.body);
+
         const hasPermission = WebHookController.verifyUserPermission(userId);
         if (!hasPermission) {
             return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
@@ -37,8 +40,6 @@ export class WebHookController {
             ["DEBUG-CONFIG", req.body]
         );
 
-        console.log(req.body);
-
         return res.status(200).json({ msg: "Webhook configurado com sucesso" });
     }
 
@@ -48,6 +49,9 @@ export class WebHookController {
                 'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
                 ["DEBUG-PIX", "CHAMOU PIX"]
             );
+
+            console.log("DEBUG-PIX");
+            console.log(req.body);
 
             const userId = req.headers['user-id'];
 
@@ -64,8 +68,6 @@ export class WebHookController {
                 'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
                 ["DEBUG-PIX", req.body]
             );
-
-            console.log(req.body);
 
             const { txid, e2eId, amount, transaction, donation, user } = await WebHookController.processPaymentConfirmation(req.body);
 
