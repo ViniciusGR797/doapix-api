@@ -10,6 +10,7 @@ import donationRoutes from './routes/donationRoute';
 import transactionRoutes from './routes/transactionRoute';
 import webHookRoutes from './routes/webHookRoute';
 import { WebSocketController } from './controllers/webSocketController';
+import config from './config';
 
 const app = express();
 
@@ -19,7 +20,7 @@ connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({
-    origin: '*',
+    origin: config.cors.ui_url,
 }));
 
 // Rotas da API
@@ -38,7 +39,7 @@ app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson, swaggerStyle));
 const server = new Server(app);
 const io = new SocketServer(server, {
     cors: {
-        origin: '*',
+        origin: config.cors.ui_url,
     }
 });
 

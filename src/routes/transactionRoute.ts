@@ -80,8 +80,6 @@ router.get('/donation/:donation_id', authMiddleware, TransactionController.getTr
  *     tags:
  *       - Transaction
  *     operationId: get_transaction_by_id
- *     security:
- *       - jwt: []
  *     responses:
  *       200:
  *         description: Success
