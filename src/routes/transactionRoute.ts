@@ -109,7 +109,7 @@ router.get('/donation/:donation_id', authMiddleware, TransactionController.getTr
  *               $ref: "#/components/schemas/InternalServerError"
  */
 
-router.get('/:transaction_id', authMiddleware, TransactionController.getTransactionById);
+router.get('/:transaction_id', TransactionController.getTransactionById);
 
 /**
  * @swagger

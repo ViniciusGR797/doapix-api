@@ -65,7 +65,7 @@ export class TransactionService {
 
     static async updateTransaction(transaction_id: string, status: string): Promise<{ updatedTransaction: any | null; error: string | null }> {
         try {
-          const result = await query('UPDATE transactions SET status = $1 WHERE id = $6 RETURNING *', [status, transaction_id]);
+          const result = await query('UPDATE transactions SET status = $1 WHERE id = $2 RETURNING *', [status, transaction_id]);
           if (result && result.rows && result.rows.length > 0) {
             const updatedTransaction = result.rows[0];
             return { updatedTransaction, error: null };

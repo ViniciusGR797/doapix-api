@@ -34,7 +34,11 @@ app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson, swaggerStyle));
 
 // WebSocket
 const server = new Server(app);
-const io = new SocketServer(server);
+const io = require('socket.io')(server, {
+    cors: {
+        origin: '*',
+    }
+});
 
 io.on('connection', (socket: Socket) => {
     socket.on('txid', (txid: string) => {

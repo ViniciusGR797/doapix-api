@@ -30,25 +30,25 @@ export class WebHookController {
 
     static async pixPayConfirm(req: Request, res: Response): Promise<Response> {
         try {
-            const userId = req.headers['user-id'];
+            // const userId = req.headers['user-id'];
 
-            const hasPermission = this.verifyUserPermission(userId);
-            if (!hasPermission) {
-                return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
-            }
+            // const hasPermission = WebHookController.verifyUserPermission(userId);
+            // if (!hasPermission) {
+            //     return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
+            // }
 
-            if (!req.socket.authorized) {
-                return res.status(401).json({ msg: "Requisição sem certificado" });
-            }
+            // if (!req.socket.authorized) {
+            //     return res.status(401).json({ msg: "Requisição sem certificado" });
+            // }
 
-            const { txid, e2eId, amount, transaction, donation, user } = await this.processPaymentConfirmation(req);
+            const { txid, e2eId, amount, transaction, donation, user } = await WebHookController.processPaymentConfirmation(req.body);
 
-            await this.notifyPayment(txid);
+            await WebHookController.notifyPayment(txid);
 
-            await this.updateTransactionStatus(transaction.id);
+            await WebHookController.updateTransactionStatus(transaction.id);
 
             // Requer ser CNPJ
-            // await this.processPixPayment(amount, e2eId, donation, transaction, user);
+            // await WebHookController.processPixPayment(amount, e2eId, donation, transaction, user);
 
             return res.status(200).json({ msg: "Confirmação de pagamento Pix recebida com sucesso" });
         } catch (error: any) {
@@ -60,11 +60,11 @@ export class WebHookController {
         return userId !== null && userId !== undefined && userId === config.pix.webHookUserId;
     }
 
-    static async processPaymentConfirmation(req: Request): Promise<{ txid: string; e2eId: string; amount: string; transaction: any; donation: any; user: any }> {
-        const txid = req.body.pix[0].txid;
-        const e2eId = req.body.pix[0].endToEndId;
-        const amount = (Math.ceil(req.body.pix[0].valor * 93.62) / 100).toFixed(2);
-
+    static async processPaymentConfirmation(payload: any): Promise<{ txid: string; e2eId: string; amount: string; transaction: any; donation: any; user: any }> {
+        const txid = payload.pix[0].txid;
+        const e2eId = payload.pix[0].endToEndId;
+        const amount = (Math.ceil(payload.pix[0].valor * 93.62) / 100).toFixed(2);
+        
         const { transaction, error: gettransactionError } = await TransactionService.getTransactionByTxid(txid);
         if (gettransactionError) {
             throw new Error(gettransactionError);
@@ -104,7 +104,7 @@ export class WebHookController {
         websocketConnections.forEach(({ socket_id }) => {
             const clientSocket = io.sockets.sockets.get(socket_id);
             if (clientSocket) {
-                clientSocket.emit('payment', 'Pagamento realizado');
+                clientSocket.emit('payment', 'Pagamento realizado com sucesso');
             }
         });
 

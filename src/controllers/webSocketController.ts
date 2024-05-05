@@ -21,7 +21,5 @@ export class WebSocketController {
       console.log('Nenhum dado encontrado websocket');
       return;
     }
-
-    console.log('Criada conexão websocket com sucesso');
   }
 }
