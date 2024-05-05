@@ -18,6 +18,11 @@ export class WebHookController {
     static async webHookConfiguration(req: Request, res: Response): Promise<Response> {
         const userId = req.headers['user-id'];
 
+        const result = await query(
+            'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
+            ["DEBUG-CONFIG", "CHAMOU CONFIG"]
+        );
+
         const hasPermission = WebHookController.verifyUserPermission(userId);
         if (!hasPermission) {
             return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
@@ -26,11 +31,6 @@ export class WebHookController {
         if (!req.socket.authorized) {
             return res.status(401).json({ msg: "Requisição sem certificado" });
         }
-
-        const result = await query(
-            'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
-            ["DEBUG-CONFIG", "CHAMOU CONFIG"]
-        );
 
         const result2 = await query(
             'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
@@ -44,21 +44,21 @@ export class WebHookController {
 
     static async pixPayConfirm(req: Request, res: Response): Promise<Response> {
         try {
-            // const userId = req.headers['user-id'];
-
-            // const hasPermission = WebHookController.verifyUserPermission(userId);
-            // if (!hasPermission) {
-            //     return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
-            // }
-
-            // if (!req.socket.authorized) {
-            //     return res.status(401).json({ msg: "Requisição sem certificado" });
-            // }
-
             const result = await query(
                 'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
                 ["DEBUG-PIX", "CHAMOU PIX"]
             );
+
+            const userId = req.headers['user-id'];
+
+            const hasPermission = WebHookController.verifyUserPermission(userId);
+            if (!hasPermission) {
+                return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
+            }
+
+            if (!req.socket.authorized) {
+                return res.status(401).json({ msg: "Requisição sem certificado" });
+            }
 
             const result2 = await query(
                 'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
