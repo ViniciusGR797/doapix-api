@@ -18,7 +18,9 @@ connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors());
+app.use(cors({
+    origin: '*',
+}));
 
 // Rotas da API
 app.use('/users', userRoutes);
@@ -34,7 +36,7 @@ app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpecJson, swaggerStyle));
 
 // WebSocket
 const server = new Server(app);
-const io = require('socket.io')(server, {
+const io = new SocketServer(server, {
     cors: {
         origin: '*',
     }
