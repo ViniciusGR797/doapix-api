@@ -30,7 +30,7 @@ const config = {
     splitConfigId: process.env.SPLIT_CONFIG_ID || '0123456789abcdef0123456789abcdef',
   },
   cors: {
-    ui_url: process.env.PIX_URL || 'https://doapix-ui.com',
+    ui_url: process.env.UI_URL || 'https://doapix-ui.com',
   },
 };
 
