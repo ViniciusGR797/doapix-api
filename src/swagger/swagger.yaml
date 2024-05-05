@@ -890,12 +890,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequest'
-        '404':
-          description: NotFound
+        '401':
+          description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotFound'
+                $ref: '#/components/schemas/Unauthorized'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
         '500':
           description: InternalServerError
           content:
@@ -916,8 +922,6 @@ paths:
       tags:
         - Transaction
       operationId: get_transaction_by_id
-      security:
-        - jwt: []
       responses:
         '200':
           description: Success
@@ -999,6 +1003,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
         '401':
           description: Unauthorized
           content:
@@ -1130,6 +1140,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteSuccess'
+        '400':
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
         '401':
           description: Unauthorized
           content:
