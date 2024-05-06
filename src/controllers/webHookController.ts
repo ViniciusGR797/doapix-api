@@ -10,6 +10,7 @@ import { query } from "../utils/database"
 import { Donation } from '../models/donationModel';
 import { Transaction } from '../models/transactionModel';
 import { User } from '../models/userModel';
+import { addEmoji } from '../utils/emoji';
 
 declare module 'net' {
     interface Socket {
@@ -105,6 +106,9 @@ export class WebHookController {
 
     static async updateTransactionStatus(transaction: Transaction): Promise<void> {
         if (transaction.status === "Pago") {
+            transaction.message = addEmoji(transaction.message.substring(1));
+
+
             const { createdTransactionID, error: createTransactionError } = await TransactionService.createTransaction(transaction);
             if (createTransactionError) {
                 throw new Error(createTransactionError);
