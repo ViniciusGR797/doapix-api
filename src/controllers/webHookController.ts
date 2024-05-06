@@ -42,13 +42,13 @@ export class WebHookController {
                 return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
             }
 
-            const { txid, e2eId, amount, transaction, donation, user } = await WebHookController.processPaymentConfirmation(req.body);
+            const { txid, e2eId, amount, grossAmount, transaction, donation, user } = await WebHookController.processPaymentConfirmation(req.body);
 
             await WebHookController.notifyPayment(txid);
 
-            await WebHookController.updateTransactionStatus(transaction.id);
+            await WebHookController.updateTransactionStatus(transaction);
 
-            await WebHookController.updateDonationAmountRaised(donation, amount);
+            await WebHookController.updateDonationAmountRaised(donation, grossAmount);
 
             // Requer ser CNPJ
             // await WebHookController.processPixPayment(amount, e2eId, donation, transaction, user);
@@ -63,10 +63,11 @@ export class WebHookController {
         return userId !== null && userId !== undefined && userId === config.webHookUserId;
     }
 
-    static async processPaymentConfirmation(payload: any): Promise<{ txid: string; e2eId: string; amount: string; transaction: Transaction; donation: Donation; user: User }> {
+    static async processPaymentConfirmation(payload: any): Promise<{ txid: string; e2eId: string; amount: string; grossAmount: string; transaction: Transaction; donation: Donation; user: User }> {
         const txid = payload.pix[0].txid;
         const e2eId = payload.pix[0].endToEndId;
         const amount = (Math.ceil(payload.pix[0].valor * 93.62) / 100).toFixed(2);
+        const grossAmount = payload.pix[0].valor;
 
         const { transaction, error: gettransactionError } = await TransactionService.getTransactionByTxid(txid);
         if (gettransactionError) {
@@ -92,7 +93,7 @@ export class WebHookController {
             throw new Error('Nenhum dado de usuário encontrado');
         }
 
-        return { txid, e2eId, amount, transaction, donation, user };
+        return { txid, e2eId, amount, grossAmount, transaction, donation, user };
     }
 
     static async notifyPayment(txid: string): Promise<void> {
@@ -102,13 +103,24 @@ export class WebHookController {
         });
     }
 
-    static async updateTransactionStatus(transactionId: string): Promise<void> {
-        const { updatedTransaction, error: updateUserError } = await TransactionService.updateTransaction(transactionId, "Pago");
-        if (updateUserError) {
-            throw new Error(updateUserError);
+    static async updateTransactionStatus(transaction: Transaction): Promise<void> {
+        if (transaction.status === "Pago") {
+            const { createdTransactionID, error: createTransactionError } = await TransactionService.createTransaction(transaction);
+            if (createTransactionError) {
+                throw new Error(createTransactionError);
+            }
+            if (!createdTransactionID || createdTransactionID === "") {
+                throw new Error('Erro ao criar transação');
+            }
         }
-        if (!updatedTransaction) {
-            throw new Error('Erro ao atualizar transação');
+        else {
+            const { updatedTransaction, error: updateUserError } = await TransactionService.updateTransaction(transaction.id, "Pago");
+            if (updateUserError) {
+                throw new Error(updateUserError);
+            }
+            if (!updatedTransaction) {
+                throw new Error('Erro ao atualizar transação');
+            }
         }
     }
 
@@ -116,7 +128,7 @@ export class WebHookController {
         const newAmount = (parseFloat(donation.amount_raised.replace("$", "")) + parseFloat(amount)).toFixed(2);
         donation.amount_raised = newAmount;
 
-        const { updatedDonation, error: updateUserError } = await DonationService.updateDonation(donation.id, donation);
+        const { updatedDonation, error: updateUserError } = await DonationService.updateDonationAmountRaised(donation.id, newAmount);
         if (updateUserError) {
             throw new Error(updateUserError);
         }
