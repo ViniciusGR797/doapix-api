@@ -1,5 +1,6 @@
 import { Transaction } from "../models/transactionModel";
 import { query } from "../utils/database";
+import { addEmoji } from "../utils/emoji";
 
 export class TransactionService {
     static async getTransactionByDonation(donation_id: string, status: string): Promise<{ transactions: Transaction[] | null, error: string | null }> {
@@ -13,7 +14,7 @@ export class TransactionService {
             return { transactions: null, error: 'Erro interno do servidor' };
         }
     }
-    
+
     static async getTransactionById(transaction_id: string): Promise<{ transaction: Transaction | null, error: string | null }> {
         try {
             const result = await query('SELECT * FROM transactions WHERE id = $1', [transaction_id]);
@@ -47,10 +48,11 @@ export class TransactionService {
     static async createTransaction(data: any): Promise<{ createdTransactionID: string | null; error: string | null }> {
         try {
             const { txid, location, qr_code, pix_copy_paste, amount, alias, email, message, status, donation_id } = data;
+            const messageEmoji = addEmoji(message)
 
             const result = await query(
-                'INSERT INTO transactions (txid, location, qr_code, pix_copy_paste, amount, alias, email, message, status, donation_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id', 
-                [txid, location, qr_code, pix_copy_paste, amount, alias, email, message, status, donation_id]
+                'INSERT INTO transactions (txid, location, qr_code, pix_copy_paste, amount, alias, email, message, status, donation_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
+                [txid, location, qr_code, pix_copy_paste, amount, alias, email, messageEmoji, status, donation_id]
             );
             if (result && result.rows && result.rows.length > 0 && result.rows[0].id) {
                 return { createdTransactionID: result.rows[0].id, error: null };
@@ -65,16 +67,16 @@ export class TransactionService {
 
     static async updateTransaction(transaction_id: string, status: string): Promise<{ updatedTransaction: any | null; error: string | null }> {
         try {
-          const result = await query('UPDATE transactions SET status = $1 WHERE id = $2 RETURNING *', [status, transaction_id]);
-          if (result && result.rows && result.rows.length > 0) {
-            const updatedTransaction = result.rows[0];
-            return { updatedTransaction, error: null };
-          }
-    
-          return { updatedTransaction: null, error: null };
+            const result = await query('UPDATE transactions SET status = $1 WHERE id = $2 RETURNING *', [status, transaction_id]);
+            if (result && result.rows && result.rows.length > 0) {
+                const updatedTransaction = result.rows[0];
+                return { updatedTransaction, error: null };
+            }
+
+            return { updatedTransaction: null, error: null };
         } catch (error) {
-          console.error('Erro ao atualizar transação: ', error);
-          return { updatedTransaction: null, error: 'Erro interno do servidor' };
+            console.error('Erro ao atualizar transação: ', error);
+            return { updatedTransaction: null, error: 'Erro interno do servidor' };
         }
-      }
+    }
 }

@@ -67,6 +67,24 @@ export class DonationService {
     }
   }
 
+  static async updateDonationAmountRaised(donation_id: string, amountRaised: string): Promise<{ updatedDonation: any | null; error: string | null }> {
+    try {
+      const result = await query(
+        'UPDATE donations SET amount_raised = $1 WHERE id = $2 RETURNING *',
+        [amountRaised, donation_id]
+      );
+      if (result && result.rows && result.rows.length > 0) {
+        const updatedDonation = result.rows[0];
+        return { updatedDonation, error: null };
+      }
+
+      return { updatedDonation: null, error: null };
+    } catch (error) {
+      console.error('Erro ao atualizar doação: ', error);
+      return { updatedDonation: null, error: 'Erro interno do servidor' };
+    }
+  }
+
   static async deleteDonation(donation_id: string): Promise<{ deletedDonation: any | null; error: string | null }> {
     try {
       const result = await query('DELETE FROM donations WHERE id = $1', [donation_id]);
