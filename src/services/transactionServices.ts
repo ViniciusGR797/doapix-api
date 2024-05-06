@@ -1,6 +1,5 @@
 import { Transaction } from "../models/transactionModel";
 import { query } from "../utils/database";
-import { addEmoji } from "../utils/emoji";
 
 export class TransactionService {
     static async getTransactionByDonation(donation_id: string, status: string): Promise<{ transactions: Transaction[] | null, error: string | null }> {
@@ -48,11 +47,10 @@ export class TransactionService {
     static async createTransaction(data: any): Promise<{ createdTransactionID: string | null; error: string | null }> {
         try {
             const { txid, location, qr_code, pix_copy_paste, amount, alias, email, message, status, donation_id } = data;
-            const messageEmoji = addEmoji(message)
 
             const result = await query(
                 'INSERT INTO transactions (txid, location, qr_code, pix_copy_paste, amount, alias, email, message, status, donation_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id',
-                [txid, location, qr_code, pix_copy_paste, amount, alias, email, messageEmoji, status, donation_id]
+                [txid, location, qr_code, pix_copy_paste, amount, alias, email, message, status, donation_id]
             );
             if (result && result.rows && result.rows.length > 0 && result.rows[0].id) {
                 return { createdTransactionID: result.rows[0].id, error: null };
