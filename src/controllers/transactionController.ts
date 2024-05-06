@@ -6,6 +6,7 @@ import { validarUUID } from '../utils/validate';
 import { cobGenerator, linkSplitInCob, qrCodeGenerator } from '../utils/pix';
 import { DonationService } from '../services/donationServices';
 import config from '../config';
+import { addEmoji } from '../utils/emoji';
 
 export class TransactionController {
   static async getTransactionByDonation(req: Request, res: Response): Promise<Response> {
@@ -98,7 +99,7 @@ export class TransactionController {
       "amount": payload.amount,
       "alias": payload.alias,
       "email": payload.email,
-      "message": payload.message,
+      "message": addEmoji(payload.message),
       "status": "Pendente pagamento",
       "created_at": "",
       "donation_id": donationId
