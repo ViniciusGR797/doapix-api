@@ -4,7 +4,7 @@ import { Password } from '../securities/password';
 import { Token } from '../securities/token';
 import { UserUpdate, UserInsert, User, UserLogin, UserRequestRecover, UserRecoverPwd } from '../models/userModel';
 import { validate } from 'class-validator';
-import { EmailOptions, TemplateEmail, generateRandomCode, generateRandomPassword, sendEmail } from '../utils/email';
+import { EmailOptions, TemplateEmail, generateRandomCode, sendEmail } from '../utils/email';
 import { validarUUID } from '../utils/validate';
 
 export class UserController {

@@ -40,24 +40,6 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
     }
 }
 
-export async function generateRandomPassword(length: number): Promise<string> {
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-    const passwordLength = 8;
-    let password = '';
-
-    password += charset[Math.floor(Math.random() * 26)];
-    password += charset[52 + Math.floor(Math.random() * 10)];
-    password += charset[62 + Math.floor(Math.random() * 12)];
-
-    for (let i = 0; i < passwordLength - 3; i++) {
-        password += charset[Math.floor(Math.random() * charset.length)];
-    }
-
-    password = password.split('').sort(() => Math.random() - 0.5).join('');
-
-    return password;
-}
-
 export async function generateRandomCode(length: number): Promise<string> {
     const randomNumber = Math.floor(Math.random() * 1000000);
     const code = randomNumber.toString().padStart(length, '0');
