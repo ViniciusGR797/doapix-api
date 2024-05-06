@@ -106,8 +106,7 @@ export class WebHookController {
 
     static async updateTransactionStatus(transaction: Transaction): Promise<void> {
         if (transaction.status === "Pago") {
-            transaction.message = addEmoji(transaction.message.substring(1));
-
+            transaction.message = addEmoji(transaction.message.substring(2));
 
             const { createdTransactionID, error: createTransactionError } = await TransactionService.createTransaction(transaction);
             if (createTransactionError) {
