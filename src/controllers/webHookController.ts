@@ -7,6 +7,9 @@ import { UserService } from '../services/userService';
 import { generatePixShippingId, generateRefundId } from '../securities/generateId';
 import pusher from '../utils/pusher';
 import { query } from "../utils/database"
+import { Donation } from '../models/donationModel';
+import { Transaction } from '../models/transactionModel';
+import { User } from '../models/userModel';
 
 declare module 'net' {
     interface Socket {
@@ -32,14 +35,6 @@ export class WebHookController {
 
     static async pixPayConfirm(req: Request, res: Response): Promise<Response> {
         try {
-            const result = await query(
-                'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
-                ["DEBUG-PIX", "CHAMOU PIX"]
-            );
-
-            console.log("DEBUG-PIX");
-            console.log(req.body);
-
             const userId = req.headers['user-id'];
 
             const hasPermission = WebHookController.verifyUserPermission(userId);
@@ -47,16 +42,13 @@ export class WebHookController {
                 return res.status(403).json({ msg: "Não tem permissão para acessar o recurso solicitado" });
             }
 
-            const result2 = await query(
-                'INSERT INTO logs (level, message) VALUES ($1, $2) RETURNING id', 
-                ["DEBUG-PIX", req.body]
-            );
-
             const { txid, e2eId, amount, transaction, donation, user } = await WebHookController.processPaymentConfirmation(req.body);
 
             await WebHookController.notifyPayment(txid);
 
             await WebHookController.updateTransactionStatus(transaction.id);
+
+            await WebHookController.updateDonationAmountRaised(donation, amount);
 
             // Requer ser CNPJ
             // await WebHookController.processPixPayment(amount, e2eId, donation, transaction, user);
@@ -71,7 +63,7 @@ export class WebHookController {
         return userId !== null && userId !== undefined && userId === config.webHookUserId;
     }
 
-    static async processPaymentConfirmation(payload: any): Promise<{ txid: string; e2eId: string; amount: string; transaction: any; donation: any; user: any }> {
+    static async processPaymentConfirmation(payload: any): Promise<{ txid: string; e2eId: string; amount: string; transaction: Transaction; donation: Donation; user: User }> {
         const txid = payload.pix[0].txid;
         const e2eId = payload.pix[0].endToEndId;
         const amount = (Math.ceil(payload.pix[0].valor * 93.62) / 100).toFixed(2);
@@ -117,6 +109,19 @@ export class WebHookController {
         }
         if (!updatedTransaction) {
             throw new Error('Erro ao atualizar transação');
+        }
+    }
+
+    static async updateDonationAmountRaised(donation: Donation, amount: string): Promise<void> {
+        const newAmount = (parseFloat(donation.amount_raised.replace("$", "")) + parseFloat(amount)).toFixed(2);
+        donation.amount_raised = newAmount;
+
+        const { updatedDonation, error: updateUserError } = await DonationService.updateDonation(donation.id, donation);
+        if (updateUserError) {
+            throw new Error(updateUserError);
+        }
+        if (!updatedDonation) {
+            throw new Error('Erro ao atualizar doação');
         }
     }
 
