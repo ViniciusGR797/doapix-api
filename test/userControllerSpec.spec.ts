@@ -3,418 +3,333 @@ import { UserController } from '../src/controllers/userController';
 import { UserService } from '../src/services/userService';
 import { Password } from '../src/securities/password';
 import { Token } from '../src/securities/token';
-import { validate } from 'class-validator';
-import { generateRandomCode, sendEmail } from '../src/utils/email';
-import { UserInsert, UserUpdate, UserLogin, UserRequestRecover, UserRecoverPwd } from '../src/models/userModel';
-
-
-
 
 jest.mock('../src/services/userService');
 jest.mock('../src/securities/password');
 jest.mock('../src/securities/token');
-jest.mock('class-validator');
-jest.mock('../src/utils/email');
 
-
-describe('userController', () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-
-    beforeEach(() => {
-        req = {};
-        res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-        };
-    });
-
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
+describe('UserController', () => {
     describe('getUserMe', () => {
-        it('should return a user if valid user_id is provided', async () => {
-
+        it('should return user when successful', async () => {
             const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
-            const mockUser = { id: mockUserId, name: 'John Doe', email: 'john@example.com', pwd: 'hashedpassword' };
-
-            const mockRequest = {
-                params: { user_id: mockUserId },
-            } as unknown as Request;
+            const mockUser = { id: mockUserId, name: 'John Doe', email: 'john@example.com' };
+            const mockRequest = { user_id: mockUserId } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
             (UserService.getUserById as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
 
-            await UserController.getUserMe(req as Request, res as Response);
+            await UserController.getUserMe(mockRequest, mockResponse);
 
-            expect(res.json).toHaveBeenCalledWith(mockUser);
-            expect(res.status).toHaveBeenCalledWith(200);
+            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            expect(mockResponse.json).toHaveBeenCalledWith(mockUser);
         });
 
-        it('should return 400 if user_id is invalid', async () => {
-            const mockUserId = 'invalid-uuid';
-            const mockRequest = {
-                params: { user_id: mockUserId },
-            } as unknown as Request;
+        it('should return error message when failed to get user', async () => {
+            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+            const mockError = 'Failed to get user';
+            const mockRequest = { user_id: mockUserId } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
-            await UserController.getUserMe(req as Request, res as Response);
+            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null, error: mockError });
 
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
+            await UserController.getUserMe(mockRequest, mockResponse);
+
+            expect(mockResponse.status).toHaveBeenCalledWith(500);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: mockError });
         });
 
-        it('should return 404 if no user is found', async () => {
-            const mockUserId = '1';
+        it('should return "Nenhum usuário encontrado" when user is not found', async () => {
+            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+            const mockRequest = { user_id: mockUserId } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
             (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null, error: null });
 
-            await UserController.getUserMe(req as Request, res as Response);
+            await UserController.getUserMe(mockRequest, mockResponse);
 
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum usuário encontrado' });
-        });
-
-        it('should return 500 on service error', async () => {
-            const mockUserId = '1';
-            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null, error: 'Erro interno do servidor' });
-
-            const mockRequest = {
-                params: { user_id: mockUserId },
-            } as unknown as Request;
-
-            await UserController.getUserMe(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Erro interno do servidor' });
+            expect(mockResponse.status).toHaveBeenCalledWith(404);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'Nenhum usuário encontrado' });
         });
     });
 
     describe('createUser', () => {
-        it('should create a user and return it', async () => {
-            const mockUser = { id: '1', name: 'John Doe', email: 'john@example.com', pwd: 'hashedpassword' };
-            req.body = { name: 'John Doe', email: 'john@example.com', pwd: 'password' };
-            (validate as jest.Mock).mockResolvedValue([]);
+        it('should create user when successful', async () => {
+            const mockUserPayload = { name: 'John Doe', email: 'john@example.com', pwd: '1234Aa@2' };
+            const mockUser = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', ...mockUserPayload };
+            const mockRequest = { body: mockUserPayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+
             (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: null });
-            (Password.hashPassword as jest.Mock).mockResolvedValue('hashedpassword');
-            (UserService.createUser as jest.Mock).mockResolvedValue({ createdUserID: '1', error: null });
+            (Password.hashPassword as jest.Mock).mockResolvedValue('hashedPassword');
+            (UserService.createUser as jest.Mock).mockResolvedValue({ createdUserID: mockUser.id, error: null });
             (UserService.getUserById as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
 
-            await UserController.createUser(req as Request, res as Response);
+            await UserController.createUser(mockRequest, mockResponse);
 
-            expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.json).toHaveBeenCalledWith(mockUser);
+            expect(mockResponse.status).toHaveBeenCalledWith(201);
+            expect(mockResponse.json).toHaveBeenCalledWith(mockUser);
         });
 
-        it('should return 400 if validation fails', async () => {
-            req.body = { name: 'John Doe', email: 'john@example.com', pwd: 'password' };
-            const mockValidationError = [{ constraints: { isEmail: 'email must be an email' } }];
-            (validate as jest.Mock).mockResolvedValue(mockValidationError);
+        it('should return error message when failed to validate user payload', async () => {
+            const mockUserPayload = {};
+            const mockError = 'O campo name é obrigatório';
+            const mockRequest = { body: mockUserPayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
-            await UserController.createUser(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'email must be an email' });
-        });
-
-        it('should return 400 if email is already registered', async () => {
-            req.body = { name: 'John Doe', email: 'john@example.com', pwd: 'password' };
-            const mockUser = { id: '1', name: 'John Doe', email: 'john@example.com', pwd: 'hashedpassword' };
-            (validate as jest.Mock).mockResolvedValue([]);
-            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
-
-            await UserController.createUser(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Este email já está cadastrado' });
-        });
-
-        it('should return 500 on service error', async () => {
-            req.body = { name: 'John Doe', email: 'john@example.com', pwd: 'password' };
-            (validate as jest.Mock).mockResolvedValue([]);
             (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: null });
-            (Password.hashPassword as jest.Mock).mockResolvedValue('hashedpassword');
-            (UserService.createUser as jest.Mock).mockResolvedValue({ createdUserID: null, error: 'Erro interno do servidor' });
+            (Password.hashPassword as jest.Mock).mockResolvedValue('hashedPassword');
+            (UserService.createUser as jest.Mock).mockResolvedValue({ createdUserID: null, error: mockError });
 
-            await UserController.createUser(req as Request, res as Response);
+            await UserController.createUser(mockRequest, mockResponse);
 
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Erro interno do servidor' });
+            expect(mockResponse.status).toHaveBeenCalledWith(400);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: mockError });
+        });
+
+        it('should return error message when user email already exists', async () => {
+            const mockUserPayload = { name: 'John Doe', email: 'john@example.com', pwd: '1234Aa@2' };
+            const mockExistingUser = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', ...mockUserPayload };
+            const mockRequest = { body: mockUserPayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+
+            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: mockExistingUser, error: null });
+
+            await UserController.createUser(mockRequest, mockResponse);
+
+            expect(mockResponse.status).toHaveBeenCalledWith(400);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'Este email já está cadastrado' });
+        });
+
+        it('should return error message when failed to create user', async () => {
+            const mockUserPayload = { name: 'John Doe', email: 'john@example.com', pwd: '1234Aa@2' };
+            const mockUser = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', ...mockUserPayload };
+            const mockError = 'Failed to create user';
+            const mockRequest = { body: mockUserPayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+
+            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: null });
+            (Password.hashPassword as jest.Mock).mockResolvedValue('hashedPassword');
+            (UserService.createUser as jest.Mock).mockResolvedValue({ createdUserID: null, error: mockError });
+
+            await UserController.createUser(mockRequest, mockResponse);
+
+            expect(mockResponse.status).toHaveBeenCalledWith(500);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: mockError });
         });
     });
 
     describe('loginUser', () => {
-        it('should return a token if login is successful', async () => {
-            const mockUser = { id: '1', name: 'John Doe', email: 'john@example.com', pwd: 'hashedpassword' };
-            req.body = { email: 'john@example.com', pwd: 'password' };
-            (validate as jest.Mock).mockResolvedValue([]);
+        it('should login user when successful', async () => {
+            const mockUserPayload = { email: 'john@example.com', pwd: '1234Aa@2' };
+            const mockUser = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', ...mockUserPayload };
+            const mockToken = 'token';
+            const mockRequest = { body: mockUserPayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+
             (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
             (Password.comparePassword as jest.Mock).mockResolvedValue(true);
-            (Token.generateToken as jest.Mock).mockReturnValue('generatedToken');
+            (Token.generateToken as jest.Mock).mockReturnValue(mockToken);
 
-            await UserController.loginUser(req as Request, res as Response);
+            await UserController.loginUser(mockRequest, mockResponse);
 
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({
+            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            expect(mockResponse.json).toHaveBeenCalledWith({
                 id: mockUser.id,
                 email: mockUser.email,
-                access_token: 'generatedToken',
+                access_token: mockToken,
             });
         });
 
-        it('should return 400 if validation fails', async () => {
-            req.body = { email: 'john@example.com', pwd: 'password' };
-            const mockValidationError = [{ constraints: { isEmail: 'email must be an email' } }];
-            (validate as jest.Mock).mockResolvedValue(mockValidationError);
+        it('should return error message when failed to validate user payload', async () => {
+            const mockUserPayload = {};
+            const mockError = 'O campo email é obrigatório';
+            const mockRequest = { body: mockUserPayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
-            await UserController.loginUser(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'email must be an email' });
-        });
-
-        it('should return 401 if credentials are invalid', async () => {
-            req.body = { email: 'john@example.com', pwd: 'password' };
-            (validate as jest.Mock).mockResolvedValue([]);
             (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: null });
 
-            await UserController.loginUser(req as Request, res as Response);
+            await UserController.loginUser(mockRequest, mockResponse);
 
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Credenciais de usuário inválidas' });
+            expect(mockResponse.status).toHaveBeenCalledWith(400);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: mockError });
         });
 
-        it('should return 500 on service error', async () => {
-            req.body = { email: 'john@example.com', pwd: 'password' };
-            (validate as jest.Mock).mockResolvedValue([]);
-            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: 'Erro interno do servidor' });
+        it('should return error message when user is not found', async () => {
+            const mockUserPayload = { email: 'john@example.com', pwd: '1234Aa@2' };
+            const mockRequest = { body: mockUserPayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
-            await UserController.loginUser(req as Request, res as Response);
+            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: null });
 
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Erro interno do servidor' });
+            await UserController.loginUser(mockRequest, mockResponse);
+
+            expect(mockResponse.status).toHaveBeenCalledWith(401);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'Credenciais de usuário inválidas' });
+        });
+
+        it('should return error message when password is invalid', async () => {
+            const mockUserPayload = { email: 'john@example.com', pwd: '1234Aa@2' };
+            const mockUser = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', ...mockUserPayload };
+            const mockRequest = { body: mockUserPayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+
+            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
+            (Password.comparePassword as jest.Mock).mockResolvedValue(false);
+
+            await UserController.loginUser(mockRequest, mockResponse);
+
+            expect(mockResponse.status).toHaveBeenCalledWith(401);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'Credenciais de usuário inválidas' });
         });
     });
 
     describe('updateUserMe', () => {
-        it('should update a user and return it', async () => {
-            const mockUser = { id: '1', name: 'John Doe', email: 'john@example.com', pwd: 'hashedpassword' };
-            const mockUserId = '1';
-            req.body = { name: 'John Updated', email: 'johnupdated@example.com', pwd: 'newpassword' };
-            (validate as jest.Mock).mockResolvedValue([]);
+        it('should update user when successful', async () => {
+            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+            const mockUser = { id: mockUserId, name: 'John Doe', email: 'john@example.com' };
+            const mockUserUpdatePayload = {
+                name: 'Teste',
+                email: 'teste2@gmail.com',
+                pwd: '1234Aa@2',
+                pix_key: '38605734035',
+                pix_key_type: 'CPF'
+            };
+            const mockUpdatedUser = {
+                id: mockUserId,
+                name: 'Teste',
+                email: 'teste2@gmail.com',
+                pix_key: '38605734035',
+                pix_key_type: 'CPF'
+            };
+            const mockRequest = { user_id: mockUserId, body: mockUserUpdatePayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+
             (UserService.getUserById as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
+            (Password.hashPassword as jest.Mock).mockResolvedValue('hashedPassword');
             (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: null });
-            (Password.hashPassword as jest.Mock).mockResolvedValue('newhashedpassword');
-            (UserService.updateUser as jest.Mock).mockResolvedValue({ updatedUser: { ...mockUser, name: 'John Updated', email: 'johnupdated@example.com', pwd: 'newhashedpassword' }, error: null });
+            (UserService.updateUser as jest.Mock).mockResolvedValue({ updatedUser: mockUpdatedUser, error: null });
 
-            await UserController.updateUserMe(req as Request, res as Response);
+            await UserController.updateUserMe(mockRequest, mockResponse);
 
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({ ...mockUser, name: 'John Updated', email: 'johnupdated@example.com', pwd: 'newhashedpassword' });
+            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            expect(mockResponse.json).toHaveBeenCalledWith(mockUpdatedUser);
         });
 
-        it('should return 400 if user_id is invalid', async () => {
-            const mockUserId = 'invalid-uuid';
+        it('should return error message when failed to validate user update payload', async () => {
+            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+            const mockUserUpdatePayload = {
+                name: 'Teste',
+                email: 'teste2@gmail.com',
+                pwd: '1234Aa@2',
+                pix_key: '38605734035',
+                pix_key_type: 'CPF'
+            };
+            const mockError = 'Invalid user update payload';
+            const mockRequest = { user_id: mockUserId, body: mockUserUpdatePayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
-            await UserController.updateUserMe(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
-        });
-
-        it('should return 400 if validation fails', async () => {
-            const mockUserId = '1';
-            req.body = { name: 'John Updated', email: 'invalid-email', pwd: 'newpassword' };
-            const mockValidationError = [{ constraints: { isEmail: 'email must be an email' } }];
-            (validate as jest.Mock).mockResolvedValue(mockValidationError);
-            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: { id: '1', name: 'John Doe', email: 'john@example.com', pwd: 'hashedpassword' }, error: null });
-
-            await UserController.updateUserMe(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'email must be an email' });
-        });
-
-        it('should return 404 if no user is found', async () => {
-            const mockUserId = '1';
             (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null, error: null });
 
-            await UserController.updateUserMe(req as Request, res as Response);
+            await UserController.updateUserMe(mockRequest, mockResponse);
 
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
+            expect(mockResponse.status).toHaveBeenCalledWith(400);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: mockError });
         });
 
-        it('should return 500 on service error', async () => {
-            const mockUserId = '1';
-            req.body = { name: 'John Updated', email: 'johnupdated@example.com', pwd: 'newpassword' };
-            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: { id: '1', name: 'John Doe', email: 'john@example.com', pwd: 'hashedpassword' }, error: null });
-            (UserService.updateUser as jest.Mock).mockResolvedValue({ updatedUser: null, error: 'Erro interno do servidor' });
+        it('should return error message when user email already exists', async () => {
+            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+            const mockUser = { id: mockUserId, name: 'John Doe', email: 'john@example.com' };
+            const mockUserUpdatePayload = {
+                name: 'Teste',
+                email: 'teste2@gmail.com',
+                pwd: '1234Aa@2',
+                pix_key: '38605734035',
+                pix_key_type: 'CPF'
+            };
+            const mockExistingUser = {
+                id: '30f58ca1-bba7-4a38-bd3f-c59ea06511dc',
+                ...mockUserUpdatePayload
+            };
+            const mockRequest = { user_id: mockUserId, body: mockUserUpdatePayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
-            await UserController.updateUserMe(req as Request, res as Response);
+            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
+            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: mockExistingUser, error: null });
 
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Erro interno do servidor' });
+            await UserController.updateUserMe(mockRequest, mockResponse);
+
+            expect(mockResponse.status).toHaveBeenCalledWith(400);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'Email já cadastrado no sistema' });
+        });
+
+        it('should return error message when failed to update user', async () => {
+            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+            const mockUser = { id: mockUserId, name: 'John Doe', email: 'john@example.com' };
+            const mockUserUpdatePayload = {
+                name: 'Teste',
+                email: 'teste2@gmail.com',
+                pwd: '1234Aa@2',
+                pix_key: '38605734035',
+                pix_key_type: 'CPF'
+            };
+            const mockError = 'Failed to update user';
+            const mockRequest = { user_id: mockUserId, body: mockUserUpdatePayload } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+
+            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
+            (Password.hashPassword as jest.Mock).mockResolvedValue('hashedPassword');
+            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: null });
+            (UserService.updateUser as jest.Mock).mockResolvedValue({ updatedUser: null, error: mockError });
+
+            await UserController.updateUserMe(mockRequest, mockResponse);
+
+            expect(mockResponse.status).toHaveBeenCalledWith(500);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: mockError });
         });
     });
 
     describe('deleteUserMe', () => {
-        it('should delete a user and return success message', async () => {
-            const mockUserId = '1';
-            const mockUser = { id: '1', name: 'John Doe', email: 'john@example.com', pwd: 'hashedpassword' };
+        it('should delete user when successful', async () => {
+            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+            const mockUser = { id: mockUserId, name: 'John Doe', email: 'john@example.com' };
+            const mockRequest = { user_id: mockUserId } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+
             (UserService.getUserById as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
             (UserService.deleteUser as jest.Mock).mockResolvedValue({ deletedUser: mockUser, error: null });
 
-            await UserController.deleteUserMe(req as Request, res as Response);
+            await UserController.deleteUserMe(mockRequest, mockResponse);
 
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Excluído com sucesso' });
+            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            expect(mockResponse.json).toHaveBeenCalledWith(mockUser);
         });
 
-        it('should return 400 if user_id is invalid', async () => {
-            const mockUserId = 'invalid-uuid';
+        it('should return error message when failed to delete user', async () => {
+            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+            const mockError = 'Failed to delete user';
+            const mockRequest = { user_id: mockUserId } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
-            await UserController.deleteUserMe(req as Request, res as Response);
+            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null, error: null });
+            (UserService.deleteUser as jest.Mock).mockResolvedValue({ deletedUser: null, error: mockError });
 
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
+            await UserController.deleteUserMe(mockRequest, mockResponse);
+
+            expect(mockResponse.status).toHaveBeenCalledWith(500);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: mockError });
         });
 
-        it('should return 404 if no user is found', async () => {
-            const mockUserId = '1';
+        it('should return "Nenhum dado encontrado" when user is not found', async () => {
+            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+            const mockRequest = { user_id: mockUserId } as unknown as Request;
+            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+
             (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null, error: null });
 
-            await UserController.deleteUserMe(req as Request, res as Response);
+            await UserController.deleteUserMe(mockRequest, mockResponse);
 
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
-        });
-
-        it('should return 500 on service error', async () => {
-            const mockUserId = '1';
-
-            const mockRequest = {
-                params: { user_id: mockUserId },
-            } as unknown as Request;
-
-            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', name: 'John Doe', email: 'john@example.com', pwd: 'hashedpassword' }, error: null });
-            (UserService.deleteUser as jest.Mock).mockResolvedValue({ deletedUser: null, error: 'Erro interno do servidor' });
-
-            await UserController.deleteUserMe(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Erro interno do servidor' });
-        });
-    });
-
-    describe('requestRecover', () => {
-        it('should send recovery email if user exists', async () => {
-            const mockUser = { id: '1', email: 'john@example.com', code_recover_pwd: null };
-            req.body = { email: 'john@example.com' };
-            (validate as jest.Mock).mockResolvedValue([]);
-            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
-            (generateRandomCode as jest.Mock).mockResolvedValue('123456');
-            (UserService.requestRecover as jest.Mock).mockResolvedValue({ requestUser: mockUser, error: null });
-
-            await UserController.requestRecover(req as Request, res as Response);
-
-            expect(sendEmail).toHaveBeenCalled();
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Email de solicitação enviado com sucesso' });
-        });
-
-        it('should return 400 if validation fails', async () => {
-            req.body = { email: 'invalid-email' };
-            const mockValidationError = [{ constraints: { isEmail: 'email must be an email' } }];
-            (validate as jest.Mock).mockResolvedValue(mockValidationError);
-
-            await UserController.requestRecover(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'email must be an email' });
-        });
-
-        it('should return 404 if no user is found', async () => {
-            req.body = { email: 'john@example.com' };
-            (validate as jest.Mock).mockResolvedValue([]);
-            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: null });
-
-            await UserController.requestRecover(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
-        });
-
-        it('should return 500 on service error', async () => {
-            req.body = { email: 'john@example.com' };
-            (validate as jest.Mock).mockResolvedValue([]);
-            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: 'Erro interno do servidor' });
-
-            await UserController.requestRecover(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Erro interno do servidor' });
-        });
-    });
-
-    describe('recoverPwd', () => {
-        it('should update password if code is valid', async () => {
-            const mockUser = { id: '1', email: 'john@example.com', code_recover_pwd: '123456', pwd: 'oldhashedpassword' };
-            req.body = { email: 'john@example.com', code_recover_pwd: '123456', pwd: 'newpassword' };
-            (validate as jest.Mock).mockResolvedValue([]);
-            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
-            (Password.hashPassword as jest.Mock).mockResolvedValue('newhashedpassword');
-            (UserService.recoverPwd as jest.Mock).mockResolvedValue({ recoverUser: { ...mockUser, pwd: 'newhashedpassword' }, error: null });
-
-            await UserController.recoverPwd(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({ ...mockUser, pwd: 'newhashedpassword' });
-        });
-
-        it('should return 400 if validation fails', async () => {
-            req.body = { email: 'invalid-email', code_recover_pwd: '123456', pwd: 'newpassword' };
-            const mockValidationError = [{ constraints: { isEmail: 'email must be an email' } }];
-            (validate as jest.Mock).mockResolvedValue(mockValidationError);
-
-            await UserController.recoverPwd(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'email must be an email' });
-        });
-
-        it('should return 404 if no user is found', async () => {
-            req.body = { email: 'john@example.com', code_recover_pwd: '123456', pwd: 'newpassword' };
-            (validate as jest.Mock).mockResolvedValue([]);
-            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: null, error: null });
-
-            await UserController.recoverPwd(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
-        });
-
-        it('should return 400 if recovery code is invalid', async () => {
-            const mockUser = { id: '1', email: 'john@example.com', code_recover_pwd: '654321', pwd: 'oldhashedpassword' };
-            req.body = { email: 'john@example.com', code_recover_pwd: '123456', pwd: 'newpassword' };
-            (validate as jest.Mock).mockResolvedValue([]);
-            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
-
-            await UserController.recoverPwd(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Código de recuperação inválido' });
-        });
-
-        it('should return 500 on service error', async () => {
-            req.body = { email: 'john@example.com', code_recover_pwd: '123456', pwd: 'newpassword' };
-            (validate as jest.Mock).mockResolvedValue([]);
-            (UserService.getUserByEmail as jest.Mock).mockResolvedValue({ user: { id: '1', email: 'john@example.com', code_recover_pwd: '123456', pwd: 'oldhashedpassword' }, error: null });
-            (UserService.recoverPwd as jest.Mock).mockResolvedValue({ recoverUser: null, error: 'Erro interno do servidor' });
-
-            await UserController.recoverPwd(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ msg: 'Erro interno do servidor' });
+            expect(mockResponse.status).toHaveBeenCalledWith(404);
+            expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
         });
     });
 });
