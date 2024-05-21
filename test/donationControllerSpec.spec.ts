@@ -1,170 +1,3 @@
-// import { Request, Response } from 'express';
-// import { DonationController } from '../src/controllers/donationController';
-// import { DonationService } from '../src/services/donationServices';
-// import { TransactionService } from '../src/services/transactionServices';
-// import { DonationInsert, DonationUpdate } from '../src/models/donationModel';
-// import { validarUUID } from '../src/utils/validate';
-
-// jest.mock('../src/services/donationServices');
-// jest.mock('../src/services/transactionServices');
-// jest.mock('../src/utils/validate');
-
-// describe('DonationController', () => {
-//   describe('getDonation', () => {
-//     it('should return 200 with donations if successful', async () => {
-//       const mockDonations = [{ id: '1', name: 'Donation 1' }];
-//       (DonationService.getDonations as jest.Mock).mockResolvedValue({ donations: mockDonations, error: null });
-//       const mockRequest = {} as Request;
-//       const mockResponse = {
-//         status: jest.fn(() => mockResponse),
-//         json: jest.fn(),
-//       } as unknown as Response;
-
-//       await DonationController.getDonation(mockRequest, mockResponse);
-
-//       expect(mockResponse.status).toHaveBeenCalledWith(200);
-//       expect(mockResponse.json).toHaveBeenCalledWith(mockDonations);
-//     });
-
-//     it('should return 500 if an error occurs', async () => {
-//       const errorMessage = 'Internal server error';
-//       (DonationService.getDonations as jest.Mock).mockResolvedValue({ donations: null, error: errorMessage });
-//       const mockRequest = {} as Request;
-//       const mockResponse = {
-//         status: jest.fn(() => mockResponse),
-//         json: jest.fn(),
-//       } as unknown as Response;
-
-//       await DonationController.getDonation(mockRequest, mockResponse);
-
-//       expect(mockResponse.status).toHaveBeenCalledWith(500);
-//       expect(mockResponse.json).toHaveBeenCalledWith({ msg: errorMessage });
-//     });
-//   });
-
-//   describe('getDonationById', () => {
-//     it('should return 200 with donation data if successful', async () => {
-//       const mockDonationId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
-//       const mockDonation = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', name: 'Donation 1' };
-//       (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation: mockDonation, error: null });
-//       (TransactionService.getTransactionByDonation as jest.Mock).mockResolvedValue({ transactions: [], error: null });
-//       const mockRequest = { params: { donation_id: mockDonationId }, user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as unknown as Request;
-//       const mockResponse = {
-//         status: jest.fn(() => mockResponse),
-//         json: jest.fn(),
-//       } as unknown as Response;
-
-//       await DonationController.getDonationById(mockRequest, mockResponse);
-
-//       expect(mockResponse.status).toHaveBeenCalledWith(200);
-//       expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining(mockDonation));
-//     });
-//   });
-
-//   describe('createDonation', () => {
-//     it('should return 201 with created donation data if successful', async () => {
-//       const mockRequestBody = {
-//         name: 'Donation Name',
-//         description: 'Donation Description',
-//         goal: '1000',
-//         url_image: 'https://example.com/image.jpg',
-//         deadline: '2024-12-31T23:59:59.999Z',
-//         state: 'active',
-//         category: 'Category',
-//       };
-//       const mockRequest = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', body: mockRequestBody } as unknown as Request;
-//       const mockResponse = {
-//         status: jest.fn(() => mockResponse),
-//         json: jest.fn(),
-//       } as unknown as Response;
-
-//       (DonationService.createDonation as jest.Mock).mockResolvedValue({ createdDonationId: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', error: null });
-
-//       await DonationController.createDonation(mockRequest, mockResponse);
-
-//       expect(mockResponse.status).toHaveBeenCalledWith(201);
-//       expect(mockResponse.json).toHaveBeenCalledWith(expect.any(Object));
-//     });
-
-//     /*it('should return 400 if userId is invalid', async () => {
-//       const mockRequest = { user_id: 'invalidUserId', body: {} } as unknown as Request;
-//       const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
-
-//       await DonationController.createDonation(mockRequest, mockResponse);
-
-//       expect(mockResponse.status).toHaveBeenCalledWith(400);
-//       expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
-//     });*/
-//   });
-
-//   describe('updateDonation', () => {
-//     it('should return 200 with updated donation data if successful', async () => {
-//       const mockDonationId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
-//       const mockRequestBody = { name: 'Updated Donation Name', description: 'Updated Donation Description', goal: '1500', url_image: 'https://example.com/updated_image.jpg', deadline: '2025-12-31T23:59:59.999Z', state: 'updated', category: 'Updated Category' };
-//       const mockRequest = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: mockDonationId }, body: mockRequestBody } as unknown as Request;
-//       const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
-
-//       (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation: mockRequestBody, error: null });
-//       (DonationService.updateDonation as jest.Mock).mockResolvedValue({ updatedDonation: mockRequestBody, error: null });
-
-//       await DonationController.updateDonation(mockRequest, mockResponse);
-
-//       expect(mockResponse.status).toHaveBeenCalledWith(200);
-//       expect(mockResponse.json).toHaveBeenCalledWith(mockRequestBody);
-//     });
-
-//     /*it('should return 400 if userId is invalid', async () => {
-//       const mockRequest = { user_id: 'invalidUserId', params: { donation_id: 'validDonationId' }, body: {} } as unknown as Request;
-//       const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
-
-//       await DonationController.updateDonation(mockRequest, mockResponse);
-
-//       expect(mockResponse.status).toHaveBeenCalledWith(400);
-//       expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
-//     });*/
-//   });
-
-//   describe('deleteDonation', () => {
-//     it('should return 200 if deletion is successful', async () => {
-//       const mockDonationId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
-//       const mockRequest = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: mockDonationId } } as unknown as Request;
-//       const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
-
-//       (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation: { id: mockDonationId }, error: null });
-//       (DonationService.deleteDonation as jest.Mock).mockResolvedValue({ deletedDonation: null, error: null });
-
-//       await DonationController.deleteDonation(mockRequest, mockResponse);
-
-//       expect(mockResponse.status).toHaveBeenCalledWith(200);
-//       expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'Excluído com sucesso' });
-//     });
-//     /*it('should return 400 if userId is invalid', async () => {
-//       const mockRequest = { user_id: 'invalidUserId', params: { donation_id: 'validDonationId' } } as unknown as Request;
-//       const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
-
-//       await DonationController.deleteDonation(mockRequest, mockResponse);
-
-//       expect(mockResponse.status).toHaveBeenCalledWith(400);
-//       expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
-//     });*/
-//   });
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { Request, Response } from 'express';
 import { DonationController } from '../src/controllers/donationController';
 import { DonationService } from '../src/services/donationServices';
@@ -271,4 +104,367 @@ describe('DonationController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({ msg: mockError });
     });
   });
+
+  describe('createDonation', () => {
+    it('should return 400 status code and error message if user ID is invalid', async () => {
+      const req = { body: {}, user_id: 'invalid_id' } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      await DonationController.createDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
+    });
+
+    it('should return 400 status code and error message if payload validation fails', async () => {
+      const req = { body: {}, user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const errorMessage = 'O campo name é obrigatório';
+      (DonationService.createDonation as jest.Mock).mockResolvedValue({ createdDonationId: null, error: errorMessage });
+
+      await DonationController.createDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ msg: errorMessage });
+    });
+
+    it('should return 500 status code and error message if there is an error in creating donation', async () => {
+      const req = { body: {
+        "name": "Teste",
+        "goal": "80.00",
+        "url_image": "image",
+        "deadline": "2024-03-24",
+        "state": "MG",
+        "category": "Saúde / Tratamentos",
+        "description": "Testando callback"
+      }, user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const errorMessage = 'Error creating donation';
+      (DonationService.createDonation as jest.Mock).mockResolvedValue({ createdDonationId: null, error: errorMessage });
+
+      await DonationController.createDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ msg: errorMessage });
+    });
+
+    it('should return 404 status code and error message if no donation is created', async () => {
+      const req = { body: {
+        "name": "Teste",
+        "goal": "80.00",
+        "url_image": "image",
+        "deadline": "2024-03-24",
+        "state": "MG",
+        "category": "Saúde / Tratamentos",
+        "description": "Testando callback"
+      }, user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      (DonationService.createDonation as jest.Mock).mockResolvedValue({ createdDonationId: null, error: null });
+
+      await DonationController.createDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
+    });
+
+    it('should return 500 status code and error message if there is an error in getting donation by ID', async () => {
+      const req = { body: {
+        "name": "Teste",
+        "goal": "80.00",
+        "url_image": "image",
+        "deadline": "2024-03-24",
+        "state": "MG",
+        "category": "Saúde / Tratamentos",
+        "description": "Testando callback"
+      }, user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const createdDonationId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+      const errorMessage = 'Error getting donation by ID';
+      (DonationService.createDonation as jest.Mock).mockResolvedValue({ createdDonationId, error: null });
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation: null, error: errorMessage });
+
+      await DonationController.createDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ msg: errorMessage });
+    });
+
+    it('should return 404 status code and error message if no donation is found after creation', async () => {
+      const req = { body: {
+        "name": "Teste",
+        "goal": "80.00",
+        "url_image": "image",
+        "deadline": "2024-03-24",
+        "state": "MG",
+        "category": "Saúde / Tratamentos",
+        "description": "Testando callback"
+      }, user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const createdDonationId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+      (DonationService.createDonation as jest.Mock).mockResolvedValue({ createdDonationId, error: null });
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation: null, error: null });
+
+      await DonationController.createDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
+    });
+
+    it('should return 201 status code and created donation if donation is created successfully', async () => {
+      const req = { body: {
+        "name": "Teste",
+        "goal": "80.00",
+        "url_image": "image",
+        "deadline": "2024-03-24",
+        "state": "MG",
+        "category": "Saúde / Tratamentos",
+        "description": "Testando callback"
+      }, user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const createdDonationId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
+      const donation = { id: createdDonationId, name: 'Donation 1' };
+      (DonationService.createDonation as jest.Mock).mockResolvedValue({ createdDonationId, error: null });
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation, error: null });
+
+      await DonationController.createDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith(donation);
+    });
+  });
+
+  describe('updateDonation', () => {
+    it('should return 400 status code and error message if user ID is invalid', async () => {
+      const req = { user_id: 'invalid_id' } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      await DonationController.updateDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
+    });
+
+    it('should return 400 status code and error message if donation ID is invalid', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: 'invalid_id' } } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      await DonationController.updateDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'ID da donation inválido' });
+    });
+
+    it('should return 500 status code and error message if there is an error in getting donation by ID', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const errorMessage = 'Error getting donation by ID';
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation: null, error: errorMessage });
+
+      await DonationController.updateDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ msg: errorMessage });
+    });
+
+    it('should return 404 status code and error message if no donation is found', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation: null, error: null });
+
+      await DonationController.updateDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
+    });
+
+    it('should return 400 status code and error message if user is not the creator of the donation', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const donation = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', name: 'Donation 1', user_id: 'other_user_id' };
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation, error: null });
+
+      await DonationController.updateDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'Apenas o usuário que criou essa campanha pode editar' });
+    });
+
+    it('should return 400 status code and error message if payload validation fails', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' }, body: {} } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const donation = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', name: 'Donation 1', user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' };
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation, error: null });
+
+      const errorMessage = 'O campo name é obrigatório';
+      (DonationService.updateDonation as jest.Mock).mockResolvedValue({ updatedDonation: null, error: errorMessage });
+
+      await DonationController.updateDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ msg: errorMessage });
+    });
+
+    it('should return 500 status code and error message if there is an error in updating donation', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' }, body: {
+        "name": "Teste",
+        "goal": "80.00",
+        "url_image": "image",
+        "deadline": "2024-03-24",
+        "state": "MG",
+        "category": "Saúde / Tratamentos",
+        "description": "Testando callback"
+      } } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const donation = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', name: 'Donation 1', user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' };
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation, error: null });
+
+      const errorMessage = 'Error updating donation';
+      (DonationService.updateDonation as jest.Mock).mockResolvedValue({ updatedDonation: null, error: errorMessage });
+
+      await DonationController.updateDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ msg: errorMessage });
+    });
+
+    it('should return 200 status code and updated donation if donation is updated successfully', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' }, body: {
+        "name": "Teste",
+        "goal": "80.00",
+        "url_image": "image",
+        "deadline": "2024-03-24",
+        "state": "MG",
+        "category": "Saúde / Tratamentos",
+        "description": "Testando callback"
+      } } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const donation = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', name: 'Donation 1', user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' };
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation, error: null });
+
+      const updatedDonation = { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', name: 'Updated Donation 1' };
+      (DonationService.updateDonation as jest.Mock).mockResolvedValue({ updatedDonation, error: null });
+
+      await DonationController.updateDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(updatedDonation);
+    });
+  });
+
+  describe('deleteDonation', () => {
+    it('should return 400 status code and error message if user ID is invalid', async () => {
+      const req = { user_id: 'invalid_id' } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      await DonationController.deleteDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
+    });
+
+    it('should return 400 status code and error message if donation ID is invalid', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: 'invalid_id' } } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      await DonationController.deleteDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'ID da donation inválido' });
+    });
+
+    it('should return 500 status code and error message if there is an error in getting donation by ID', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      const errorMessage = 'Error getting donation by ID';
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation: null, error: errorMessage });
+
+      await DonationController.deleteDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ msg: errorMessage });
+    });
+
+    it('should return 404 status code and error message if no donation is found', async () => {
+      const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc', params: { donation_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } } as unknown as Request;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      (DonationService.getDonationById as jest.Mock).mockResolvedValue({ donation: null, error: null });
+
+      await DonationController.deleteDonation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
+    });
+  });
+
 });
