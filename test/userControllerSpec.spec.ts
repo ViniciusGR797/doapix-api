@@ -217,18 +217,13 @@ describe('UserController', () => {
 
         it('should return error message when failed to validate user update payload', async () => {
             const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
-            const mockUserUpdatePayload = {
-                name: 'Teste',
-                email: 'teste2@gmail.com',
-                pwd: '1234Aa@2',
-                pix_key: '38605734035',
-                pix_key_type: 'CPF'
-            };
-            const mockError = 'Invalid user update payload';
+            const mockUserUpdatePayload = {};
+            const mockUser = { id: mockUserId, name: 'John Doe', email: 'john@example.com' };
+            const mockError = 'O campo name é obrigatório';
             const mockRequest = { user_id: mockUserId, body: mockUserUpdatePayload } as unknown as Request;
             const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
 
-            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null, error: null });
+            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
 
             await UserController.updateUserMe(mockRequest, mockResponse);
 
@@ -289,47 +284,64 @@ describe('UserController', () => {
     });
 
     describe('deleteUserMe', () => {
-        it('should delete user when successful', async () => {
-            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
-            const mockUser = { id: mockUserId, name: 'John Doe', email: 'john@example.com' };
-            const mockRequest = { user_id: mockUserId } as unknown as Request;
-            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+        it('should return 400 if user ID is invalid', async () => {
+            const req = { user_id: 'invalid_id' } as Request;
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
 
-            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: mockUser, error: null });
-            (UserService.deleteUser as jest.Mock).mockResolvedValue({ deletedUser: mockUser, error: null });
+            await UserController.deleteUserMe(req, res);
 
-            await UserController.deleteUserMe(mockRequest, mockResponse);
-
-            expect(mockResponse.status).toHaveBeenCalledWith(200);
-            expect(mockResponse.json).toHaveBeenCalledWith(mockUser);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ msg: 'ID do usuário inválido' });
         });
 
-        it('should return error message when failed to delete user', async () => {
-            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
-            const mockError = 'Failed to delete user';
-            const mockRequest = { user_id: mockUserId } as unknown as Request;
-            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+        it('should return 500 if there is an error getting the user', async () => {
+            const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as Request;
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
 
-            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null, error: null });
-            (UserService.deleteUser as jest.Mock).mockResolvedValue({ deletedUser: null, error: mockError });
+            (UserService.getUserById as jest.Mock).mockResolvedValue({ error: 'Error getting user' });
 
-            await UserController.deleteUserMe(mockRequest, mockResponse);
+            await UserController.deleteUserMe(req, res);
 
-            expect(mockResponse.status).toHaveBeenCalledWith(500);
-            expect(mockResponse.json).toHaveBeenCalledWith({ msg: mockError });
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ msg: 'Error getting user' });
         });
 
-        it('should return "Nenhum dado encontrado" when user is not found', async () => {
-            const mockUserId = '20f58ca1-bba7-4a38-bd3f-c59ea06511dc';
-            const mockRequest = { user_id: mockUserId } as unknown as Request;
-            const mockResponse = { status: jest.fn(() => mockResponse), json: jest.fn() } as unknown as Response;
+        it('should return 404 if user is not found', async () => {
+            const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as Request;
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
 
-            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null, error: null });
+            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: null });
 
-            await UserController.deleteUserMe(mockRequest, mockResponse);
+            await UserController.deleteUserMe(req, res);
 
-            expect(mockResponse.status).toHaveBeenCalledWith(404);
-            expect(mockResponse.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ msg: 'Nenhum dado encontrado' });
+        });
+
+        it('should return 500 if there is an error deleting the user', async () => {
+            const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as Request;
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
+
+            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } });
+            (UserService.deleteUser as jest.Mock).mockResolvedValue({ error: 'Error deleting user' });
+
+            await UserController.deleteUserMe(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ msg: 'Error deleting user' });
+        });
+
+        it('should return 200 if user is deleted successfully', async () => {
+            const req = { user_id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } as Request;
+            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
+
+            (UserService.getUserById as jest.Mock).mockResolvedValue({ user: { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } });
+            (UserService.deleteUser as jest.Mock).mockResolvedValue({ deletedUser: { id: '20f58ca1-bba7-4a38-bd3f-c59ea06511dc' } });
+
+            await UserController.deleteUserMe(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ msg: 'Excluído com sucesso' });
         });
     });
 });
